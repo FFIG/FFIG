@@ -5,6 +5,7 @@ project (TestCppGeneratedOutput)
 
 include_directories(../../externals/catch/include/ ../../externals/variant/include ../../output/)
 
+add_executable(TestCppTree TestCppTree.cpp)
 add_executable(TestCppCircle TestCppCircle.cpp)
 add_executable(TestShapeMocks TestShapeMocks.cpp)
 
