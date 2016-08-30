@@ -7,15 +7,33 @@ namespace CPP_API {
 
 class {{class.name}}
 {
-  {{class.name}}(const {{class.name}}&) = delete;
-
-  {{class.name}}& operator = (const {{class.name}}&) = delete;
-
 protected:
   const void* object_ = nullptr;
   {{class.name}}() = default;
 
 public:
+  {% if not class.is_abstract %}{% for method in class.constructors %}
+  {{class.name}}({% for arg in method.arguments %}{% if not forloop.first %}, {% endif %}{{arg.type}} {{arg.name}}{% endfor %})
+  {
+    int rc = {{class.name}}_{{class.name}}_create({% for arg in method.arguments %}{% if not forloop.first %}, {% endif %}{{arg.name|c_object:arg.type}}{% endfor %}, &object_);
+    if ( rc == {{class.name}}_RC_SUCCESS ) return;
+    throw exception();
+  }{% endfor %}{% endif %}
+  {{class.name}}(const {{class.name}}&) = delete;
+  {{class.name}}& operator = (const {{class.name}}&) = delete;
+  {{class.name}}({{class.name}}&& c)
+  {
+    object_ = c.object_;
+    c.object_ = nullptr;
+  }
+
+  {{class.name}}& operator = ({{class.name}}&& c)
+  {
+    object_ = c.object_;
+    c.object_ = nullptr;
+    return *this;
+  }
+  
   class exception : public std::runtime_error
   {
   public:
