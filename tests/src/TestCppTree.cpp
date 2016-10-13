@@ -12,3 +12,25 @@ TEST_CASE("Test subtree access", "[cpp_api::tree]")
   
   REQUIRE(left.data());
 }
+
+TEST_CASE("Test lifetime extension", "[cpp_api::tree]")
+{
+  auto root = Tree(3);
+  auto left = root.left_subtree();
+  
+  // this will invalidate left unless the object created above has had its lifetime extended.
+  root = Tree(1); 
+
+  REQUIRE(left.data());
+}
+
+TEST_CASE("Test move", "[cpp_api::tree]")
+{
+  auto root = Tree(3);
+  auto data = root.left_subtree().data();
+  
+  auto uprooted = std::move(root);
+
+  REQUIRE(uprooted.left_subtree().data() == data);
+}
+
