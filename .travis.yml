@@ -8,7 +8,7 @@ matrix:
       addons: &clang38
         apt:
           sources: ['llvm-toolchain-precise-3.8', 'ubuntu-toolchain-r-test']
-          packages: ['clang-3.8', 'libclang-3.8-dev', 'python3']
+          packages: ['clang-3.8', 'libclang-3.8-dev', 'python3', 'python3-pip']
       env: COMPILER='clang++-3.8'
 
 install:
