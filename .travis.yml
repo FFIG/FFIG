@@ -8,11 +8,12 @@ matrix:
       addons: &clang38
         apt:
           sources: ['llvm-toolchain-precise-3.8', 'ubuntu-toolchain-r-test']
-          packages: ['clang-3.8', 'libclang-3.8-dev']
+          packages: ['clang-3.8', 'libclang-3.8-dev', 'python3']
       env: COMPILER='clang++-3.8'
 
 install:
   - pip install --user clang django nose
+  - pip3 install --user clang django nose
   - gem install ffi
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
