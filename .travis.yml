@@ -12,6 +12,7 @@ matrix:
       env: COMPILER='clang++-3.8'
 
 install:
+  - sudo apt-get update
   - sudo apt-get -y install python3-pip python-dev
   - sudo pip3 install -U setuptools clang django nose
   - sudo pip install -U setuptools clang django nose
