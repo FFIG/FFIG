@@ -1,6 +1,5 @@
-sudo: required
+sudo: false
 language: cpp
-dist: trusty
 
 matrix:
   include:
@@ -13,10 +12,7 @@ matrix:
       env: COMPILER='clang++-3.8'
 
 install:
-  - sudo apt-get update
-  - sudo apt-get -y install python3-pip python-dev
-  - sudo pip3 install -U setuptools clang django nose
-  - sudo pip install -U setuptools clang django nose
+  - pip install --user clang django nose
   - gem install ffi
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
