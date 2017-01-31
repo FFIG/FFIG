@@ -57,7 +57,7 @@ def build(input_file):
     generator_call = 'python FFIG.py -m {} -i {} -o output -b {}'.format(
             strip_extension(input_file), input_file, ' '.join(all_templates))
     subprocess.check_call(generator_call.split(), cwd=root_dir)
-    #generate.main(input_file, template_dir, output_dir)
+    
     shutil.copy(input_file, output_dir)
     
     # Compile the generated bindings.
