@@ -7,8 +7,6 @@ import shutil
 import subprocess
 import sys
 
-import generate
-
 def find_clang(binary='clang++', version='3.8'):
     ''' Search for a suitable clang binary.
         Returns the path to the executable, or None if not found.
