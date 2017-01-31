@@ -50,11 +50,16 @@ def build(input_file):
     dylib_extension = find_dylib_extension()
 
     # TODO: These paths probably shouldn't be hard-coded.
-    template_dir = 'templates'
-    output_dir = 'output'
+    root_dir = os.path.abspath(os.path.dirname(__file__))
+    template_dir = os.path.join(root_dir, 'templates')
+    output_dir = os.path.join(root_dir, 'output')
 
-    # Call the generator.
-    generate.main(input_file, template_dir, output_dir)
+    # Call the FFIG generator in the same way that a user would.
+    all_templates = [x for x in os.listdir(template_dir) if x.endswith('.tmpl')]
+    generator_call = 'python FFIG.py -m {} -i {} -o output -b {}'.format(
+            strip_extension(input_file), input_file, ' '.join(all_templates))
+    subprocess.check_call(generator_call.split(), cwd=root_dir)
+    #generate.main(input_file, template_dir, output_dir)
     shutil.copy(input_file, output_dir)
     
     # Compile the generated bindings.
