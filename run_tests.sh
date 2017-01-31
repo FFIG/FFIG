@@ -15,12 +15,16 @@ echo " [OK]"
 HEADERS=Shape.h
 for HEADER in input/*
   do echo -n Generating bindings for ${HEADER}
-  ./_build.sh ${HEADER}
+  python _build.py ${HEADER}
   echo " [OK]" 
 done
 
+PYTHON2=python2
+which $PYTHON2 > /dev/null || PYTHON2=python
+
 echo Running python2 tests
-python2 -m nose -v tests/
+$PYTHON2 -m nose -v tests/
+$PYTHON2 -m nose -v tests/cppmodel
 
 #FIXME: Get Python 3 tests running on travis-ci
 #echo Running python3 tests
