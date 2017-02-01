@@ -9,7 +9,7 @@ install:
   - docker build -t ffig_cont .
 
 script:
-  - docker run ffig_cont /bin/bash -c "cd ../ && ./scripts/build.py -t"
+  - docker run ffig_cont /bin/bash -c "./scripts/build.py -t"
 
 notifications:
   slack:
