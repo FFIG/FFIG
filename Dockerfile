@@ -17,7 +17,7 @@ ENV HOME /home/c-api-user
 ENV LD_LIBRARY_PATH /usr/lib/llvm-3.8/lib:$LD_LIBRARY_PATH
 
 COPY . /home/c-api-user/demo
-RUN cd /home/c-api-user/demo && git submodule update --init --recursive
+RUN cd /home/c-api-user/demo
 
 EXPOSE 8888
 WORKDIR /home/c-api-user/demo/demos
@@ -25,4 +25,3 @@ VOLUME /home/c-api-user/demo/demos
 COPY docker/run-server.sh .
 
 CMD ["./run-server.sh"]
-
