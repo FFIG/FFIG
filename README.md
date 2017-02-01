@@ -49,7 +49,7 @@ git submodule update --init
 The build uses cmake driven by a simple Python script. To build and run tests, run the following from the console:
 
 ```
-./scripts/build.py --tests
+./scripts/build.py -t
 ```
 
 #Continuous integration
