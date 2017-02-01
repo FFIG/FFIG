@@ -9,4 +9,4 @@ install:
   - docker build -t ffig_cont .
 
 script:
-  - docker run -e PATH=$PATH:/home/c-api-user/.local/bin ffig_cont /bin/bash -c "cd ../ && ./run_tests.sh"
+  - docker run -e ffig_cont /bin/bash -c "cd ../ && ./run_tests.sh"
