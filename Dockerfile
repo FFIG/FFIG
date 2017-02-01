@@ -16,8 +16,8 @@ RUN useradd c-api-user && mkdir -p /home/c-api-user && chown c-api-user /home/c-
 ENV HOME /home/c-api-user
 ENV LD_LIBRARY_PATH /usr/lib/llvm-3.8/lib:$LD_LIBRARY_PATH
 
-USER c-api-user
-RUN git clone --recurse-submodules https://github.com/jbcoe/C_API_generation /home/c-api-user/demo
+COPY . /home/c-api-user/demo
+RUN cd /home/c-api-user/demo && git submodule update --init --recursive
 
 EXPOSE 8888
 WORKDIR /home/c-api-user/demo/demos
