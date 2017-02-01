@@ -10,6 +10,8 @@ def main():
     parser.add_argument(
         "-t", help="run tests", action="store_true", dest="run_tests")
     parser.add_argument(
+        "-v", help="verbose", action="store_true", dest="verbose")
+    parser.add_argument(
         "-o",
         help="output dir (relative to source dir)",
         default="build",
@@ -23,10 +25,11 @@ def main():
 
     src_dir = os.path.dirname(os.path.dirname(__file__))
 
-    subprocess.check_call(
-        "cmake . -B{} -DCMAKE_BUILD_TYPE={}".format(args.out_dir,
-                                                    args.config).split(),
-        cwd=src_dir)
+    cmake_invocation = "cmake . -B{} -DCMAKE_BUILD_TYPE={}".format(args.out_dir, args.config)    
+    if args.verbose:
+        cmake_invocation = cmake_invocation + " -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
+
+    subprocess.check_call(cmake_invocation.split(), cwd=src_dir)
     subprocess.check_call(
         "cmake --build ./{}".format(args.out_dir).split(), cwd=src_dir)
 
