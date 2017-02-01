@@ -23,6 +23,7 @@ script:
   - docker run ffig_cont /bin/bash -c "cd ../ && ./run_tests.sh"
   - mkdir -p $(dirname ${DOCKER_CACHE_FILE}) ; docker save $(docker history -q ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} | grep -v '<missing>') | gzip > ${DOCKER_CACHE_FILE};
 
+
 notifications:
   slack:
     rooms:
