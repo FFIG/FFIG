@@ -5,13 +5,15 @@ language: python
 services:
   - docker
 
-install:
+before_install:
   - if [ ${TRAVIS_PULL_REQUEST} = "false" ]; then
       git checkout $TRAVIS_BRANCH;
     else
       git checkout -b $TRAVIS_PULL_REQUEST_BRANCH;
     fi
+
+install:
   - docker build -t ffig_cont .
 
 script:
-  - docker run ffig_cont /bin/bash -c "export PATH=$PATH:/home/c-api-user/.local/bin && cd ../ && ./run_tests.sh"
+  - docker run -e PATH=$PATH:/home/c-api-user/.local/bin ffig_cont /bin/bash -c "cd ../ && ./run_tests.sh"
