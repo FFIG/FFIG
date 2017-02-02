@@ -8,7 +8,7 @@
 # FIXME: Make output directory user-configurable.
 # Currently the generated bindings and libraries go into ${CMAKE_BINARY_DIR}/generated.
 #
-# Useage:
+# Usage:
 #
 # ffig_add_library(NAME myModuleName INPUTS myHeader.h RUBY PYTHON)
 #
