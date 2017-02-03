@@ -13,7 +13,10 @@ include(ffig)
 include_directories(externals/catch/include)
 include_directories(externals/variant/include)
 
-find_package(PythonInterp REQUIRED)
+if(NOT PYTHON_EXECUTABLE)
+  find_package(PythonInterp REQUIRED)
+endif()
+
 find_package(Ruby REQUIRED)
 
 ffig_add_library(NAME Shape INPUTS input/Shape.h PYTHON RUBY CPP CPP_MOCKS)
