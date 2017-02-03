@@ -15,6 +15,11 @@ include_directories(externals/variant/include)
 
 if(NOT PYTHON_EXECUTABLE)
   find_package(PythonInterp REQUIRED)
+else()
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import this" RESULT_VARIABLE result OUTPUT_QUIET ERROR_QUIET)
+  if(result)
+    message(FATAL_ERROR "CMake failed: ${PYTHON_EXECUTABLE} cannot execute a simple Python script.")
+  endif()
 endif()
 
 find_package(Ruby REQUIRED)
