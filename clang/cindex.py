@@ -67,6 +67,43 @@ import collections
 
 import clang.enumerations
 
+import sys 
+if sys.version_info[0] == 3:  
+# Python 3 strings are unicode, translate them to/from utf8 for C-interop.
+    class c_interop_string(c_char_p):
+        def __init__(self, p=None):
+            if p is None:
+                p = ""
+            if type(p) == str:
+                p = p.encode("utf8")
+            super(c_char_p, self).__init__(p)
+
+        @property
+        def value(self):
+            return super(c_char_p, self).value.decode("utf8")
+
+        @classmethod
+        def from_param(cls, param):
+            return cls(param)
+
+    def _utf8_to_python_string(x, *args):
+        return x.decode("utf8")
+    
+    def b(x):
+        if type(x) == 'bytes':
+            return x
+        return x.encode('utf8')
+
+elif sys.version_info[0] == 2:  
+# Python 2 strings are utf8 byte strings, no translation is needed for C-interop.
+    c_interop_string = c_char_p
+
+    def _utf8_to_python_string(x, *args):
+        return x
+    
+    def b(x):
+        return x
+
 # ctypes doesn't implicitly convert c_void_p to the appropriate wrapper
 # object. This is a problem, because it means that from_parameter will see an
 # integer and pass the wrong value on platforms where int != void*. Work around
@@ -1685,8 +1722,7 @@ class Cursor(Structure):
             children.append(child)
             return 1 # continue
         children = []
-        conf.lib.clang_visitChildren(self, callbacks['cursor_visit'](visitor),
-            children)
+        conf.lib.clang_visitChildren(self, callbacks['cursor_visit'](visitor), children)
         return iter(children)
 
     def walk_preorder(self):
@@ -2541,7 +2577,7 @@ class TranslationUnit(ClangObject):
 
         args_array = None
         if len(args) > 0:
-            args_array = (c_char_p * len(args))(* args)
+            args_array = (c_char_p * len(args))(* [b(x) for x in args])
 
         unsaved_array = None
         if len(unsaved_files) > 0:
@@ -2550,11 +2586,11 @@ class TranslationUnit(ClangObject):
                 if hasattr(contents, "read"):
                     contents = contents.read()
 
-                unsaved_array[i].name = name
-                unsaved_array[i].contents = contents
+                unsaved_array[i].name = b(name)
+                unsaved_array[i].contents = b(contents)
                 unsaved_array[i].length = len(contents)
 
-        ptr = conf.lib.clang_parseTranslationUnit(index, filename, args_array,
+        ptr = conf.lib.clang_parseTranslationUnit(index, b(filename), args_array,
                                     len(args), unsaved_array,
                                     len(unsaved_files), options)
 
@@ -3063,7 +3099,7 @@ functionList = [
    [c_object_p]),
 
   ("clang_CompilationDatabase_fromDirectory",
-   [c_char_p, POINTER(c_uint)],
+   [c_interop_string, POINTER(c_uint)],
    c_object_p,
    CompilationDatabase.from_result),
 
@@ -3073,7 +3109,7 @@ functionList = [
    CompileCommands.from_result),
 
   ("clang_CompilationDatabase_getCompileCommands",
-   [c_object_p, c_char_p],
+   [c_object_p, c_interop_string],
    c_object_p,
    CompileCommands.from_result),
 
@@ -3108,7 +3144,7 @@ functionList = [
    c_uint),
 
   ("clang_codeCompleteAt",
-   [TranslationUnit, c_char_p, c_int, c_int, c_void_p, c_int, c_int],
+   [TranslationUnit, c_interop_string, c_int, c_int, c_void_p, c_int, c_int],
    POINTER(CCRStructure)),
 
   ("clang_codeCompleteGetDiagnostic",
@@ -3124,7 +3160,7 @@ functionList = [
    c_object_p),
 
   ("clang_createTranslationUnit",
-   [Index, c_char_p],
+   [Index, c_interop_string],
    c_object_p),
 
   ("clang_CXXConstructor_isConvertingConstructor",
@@ -3274,7 +3310,8 @@ functionList = [
 
   ("clang_getCString",
    [_CXString],
-   c_char_p),
+   c_char_p,
+   _utf8_to_python_string),
 
   ("clang_getCursor",
    [TranslationUnit, SourceLocation],
@@ -3421,7 +3458,7 @@ functionList = [
    Type.from_result),
 
   ("clang_getFile",
-   [TranslationUnit, c_char_p],
+   [TranslationUnit, c_interop_string],
    c_object_p),
 
   ("clang_getFileName",
@@ -3550,7 +3587,8 @@ functionList = [
 
   ("clang_getTUResourceUsageName",
    [c_uint],
-   c_char_p),
+   c_interop_string, 
+   _utf8_to_python_string),
 
   ("clang_getTypeDeclaration",
    [Type],
@@ -3645,7 +3683,7 @@ functionList = [
    bool),
 
   ("clang_parseTranslationUnit",
-   [Index, c_char_p, c_void_p, c_int, c_void_p, c_int, c_int],
+   [Index, c_interop_string, c_void_p, c_int, c_void_p, c_int, c_int],
    c_object_p),
 
   ("clang_reparseTranslationUnit",
@@ -3653,7 +3691,7 @@ functionList = [
    c_int),
 
   ("clang_saveTranslationUnit",
-   [TranslationUnit, c_char_p, c_uint],
+   [TranslationUnit, c_interop_string, c_uint],
    c_int),
 
   ("clang_tokenize",
@@ -3725,7 +3763,7 @@ functionList = [
    Type.from_result),
 
   ("clang_Type_getOffsetOf",
-   [Type, c_char_p],
+   [Type, c_interop_string],
    c_longlong),
 
   ("clang_Type_getSizeOf",
