@@ -38,12 +38,11 @@ def collect_api_and_obj_classes(classes, api_annotation):
     api_classes = {c.name: APIClass(c) for c in classes if api_annotation in c.annotations}
 
     for c in classes:
-        for b in c.base_classes:
-            if b in api_classes:
-                api_classes[b].impls.append(c)
+        for base in c.base_classes:
+            if base in api_classes:
+                api_classes[base].impls.append(c)
 
     return [c for k, c in api_classes.items()]
-
 
 def render_api_and_obj_classes(api_classes, template):
     s = ""
@@ -55,11 +54,9 @@ def get_class_name(header_path):
     header_name = os.path.basename(header_path)
     return re.sub(".h$", "", header_name)
 
-
 def get_template_name(template_path):
     template_name = os.path.basename(template_path)
     return re.sub(".tmpl$", "", template_name)
-
 
 def get_template_output(class_name, template_name):
     split_name = template_name.split('.')
@@ -68,7 +65,6 @@ def get_template_output(class_name, template_name):
     return "{}{}.{}".format(class_name, suffix_name, extension)
 
 # -- END Old code --
-
 
 def main(args):
     cwd = os.getcwd()
@@ -103,7 +99,6 @@ def main(args):
             s = render_api_and_obj_classes(api_classes, template)
             output_file.write(s)
     # -- END Old approach
-
 
 if __name__ == '__main__':
 
