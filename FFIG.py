@@ -6,7 +6,7 @@
 
 import argparse
 import clang
-import cppmodel
+from cppmodel import Model, apply_class_annotations
 import os
 import re
 import sys
