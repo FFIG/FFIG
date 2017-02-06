@@ -70,9 +70,5 @@ function(ffig_add_library)
   add_custom_command(TARGET ${module}_c
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${module}_c> ${ffig_output_dir}/)
-
-  if(MSVC)
-    target_compile_options(${module}_c "/EHsc") 
-  endif()
 endfunction()
 

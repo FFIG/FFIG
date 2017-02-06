@@ -4,7 +4,7 @@
 #define {{class.name}}_RC_FAIL 1
 
 // FIXME: Use something nicer than _MBCS to see if we are on VS
-#ifdef _MBCS 
+#ifdef _MBCS
 #ifdef {{class.name}}_c_EXPORTS
 #define EXPORT extern "C" __declspec(dllexport)
 #else

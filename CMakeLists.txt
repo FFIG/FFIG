@@ -5,7 +5,11 @@ set(CMAKE_MACOSX_RPATH 1)
 
 project(test_ffig)
 
-set(CMAKE_CXX_FLAGS "-std=c++14")
+if(MSVC)
+  add_compile_options("/EHsc")
+else()
+  add_compile_options("-std=c++14")
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(ffig)
