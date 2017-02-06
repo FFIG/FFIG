@@ -22,11 +22,16 @@ else()
   endif()
 endif()
 
-find_package(Ruby REQUIRED)
+find_package(Ruby)
+if(Ruby_FOUND)
+  set(ffig_bindings "PYTHON;RUBY;CPP;CPP_MOCKS")
+else()
+  set(ffig_bindings "PYTHON;CPP;CPP_MOCKS")
+endif()
 
-ffig_add_library(NAME Shape INPUTS input/Shape.h PYTHON RUBY CPP CPP_MOCKS)
-ffig_add_library(NAME Tree INPUTS input/Tree.h PYTHON RUBY CPP CPP_MOCKS)
-ffig_add_library(NAME Asset INPUTS input/Asset.h PYTHON RUBY CPP CPP_MOCKS)
+ffig_add_library(NAME Shape INPUTS input/Shape.h ${ffig_bindings})
+ffig_add_library(NAME Tree INPUTS input/Tree.h ${ffig_bindings})
+ffig_add_library(NAME Asset INPUTS input/Asset.h ${ffig_bindings})
 
 add_subdirectory(tests/src)
 
@@ -42,15 +47,18 @@ add_test(
   COMMAND ${PYTHON_EXECUTABLE} -m nose -v ${CMAKE_SOURCE_DIR}/tests
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 
-add_test(
-  NAME test_ruby_bindings
-  COMMAND ${RUBY_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/TestShape.rb ${CMAKE_SOURCE_DIR}/tests/TestShape.rb
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+if(Ruby_FOUND)
+  add_test(
+    NAME test_ruby_bindings
+    COMMAND ${RUBY_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/TestShape.rb ${CMAKE_SOURCE_DIR}/tests/TestShape.rb
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+endif()
 
 add_test(
   NAME test_cpp_mocks
   COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestShapeMocks
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+
 
 add_test(
   NAME test_cpp_circle
