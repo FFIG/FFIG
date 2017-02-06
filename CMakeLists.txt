@@ -17,18 +17,21 @@ include(ffig)
 include_directories(externals/catch/include)
 include_directories(externals/variant/include)
 
+# Check that the found version of Python==3 on Windows.
+# Trust the user if they have supplied their own.
+# FIXME: Get to the botton of the libclang/ctypes issues with Python2.
 if(NOT PYTHON_EXECUTABLE)
   find_package(PythonInterp REQUIRED)
+  if(WIN32)
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import sys; assert sys.version_info[0] == 3" RESULT_VARIABLE result OUTPUT_QUIET ERROR_QUIET)
+    if(result)
+      message(FATAL_ERROR "CMake failed: Python 3 is required for Windows.")
+    endif()
+  endif()
 else()
   execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import this" RESULT_VARIABLE result OUTPUT_QUIET ERROR_QUIET)
   if(result)
     message(FATAL_ERROR "CMake failed: ${PYTHON_EXECUTABLE} cannot execute a simple Python script.")
-  endif()
-endif()
-if(WIN32)
-  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import sys; assert sys.version_info[0] == 3" RESULT_VARIABLE result OUTPUT_QUIET ERROR_QUIET)
-  if(result)
-    message(FATAL_ERROR "CMake failed: Python 3 is required for Windows.")
   endif()
 endif()
 
