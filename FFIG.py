@@ -82,7 +82,7 @@ def main(args):
     #FIXME: Loop over files and extend the model once we can handle multiple input files.
     i = join(cwd, args.inputs[0])
     tu = clang.cindex.TranslationUnit.from_source(i, '-x c++ -std=c++14 -stdlib=libc++'.split())
-    m = cppmodel.Model(tu)
+    m = Model(tu)
 
     m.module_name = args.module_name
 
