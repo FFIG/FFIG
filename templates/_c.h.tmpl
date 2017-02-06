@@ -5,7 +5,7 @@
 
 // FIXME: Use something nicer than _MBCS to see if we are on VS
 #ifdef _MBCS 
-#ifdef {{class.name}}_EXPORTS
+#ifdef {{class.name}}_c_EXPORTS
 #define EXPORT extern "C" __declspec(dllexport)
 #else
 #define EXPORT extern "C" __declspec(dllimport)
