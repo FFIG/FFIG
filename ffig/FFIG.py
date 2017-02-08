@@ -80,6 +80,20 @@ def write_bindings_to_disk(api_classes, env, args, output_dir):
             s = render_api_and_obj_classes(api_classes, template)
             output_file.write(s)
 
+def build_model_from_source(inp, module_name):
+    """Input:
+    - full path to source file
+    - module_name taken from args
+    Returns:
+    - model built from a clang.cindex TranslationUnit 
+        with a name, as defined in args
+    """
+    tu = clang.cindex.TranslationUnit.from_source(
+        inp, '-x c++ -std=c++14 -stdlib=libc++'.split())
+    model = cppmodel.Model(tu)
+    model.module_name = module_name
+
+    return model
 def main(args):
     cwd = os.getcwd()
     
@@ -87,13 +101,10 @@ def main(args):
     if len(args.inputs) != 1:
         raise Exception("Multiple input files are currently not supported.")
 
-    #FIXME: Loop over files and extend the model once we can handle multiple input files.
+    # FIXME: Loop over files and extend the model once we can handle multiple
+    # input files.
     i = os.path.join(cwd, args.inputs[0])
-    tu = clang.cindex.TranslationUnit.from_source(i, '-x c++ -std=c++14 -stdlib=libc++'.split())
-    m = cppmodel.Model(tu)
-
-    m.module_name = args.module_name
-
+    m = build_model_from_source(i, args.module_name)
     # -- BEGIN Old approach
     classes = m.classes
     api_classes = collect_api_and_obj_classes(classes, 'GENERATE_C_API')
