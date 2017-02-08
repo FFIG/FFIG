@@ -66,8 +66,10 @@ def get_template_output(class_name, template_name):
 
 # -- END Old code --
 
-def write_bindings_to_disk(env, args, output_dir):
+
+def write_bindings_to_disk(api_classes, env, args, output_dir):
     """ Input:
+    - api_classes
     - environment to get templates from 
     - args
     - output_dir where to write to
@@ -105,7 +107,8 @@ def main(args):
     #for f in ['to_output_ctype', 'to_ctype']:
         env.filters[f] = getattr(filters.capi_filter, f)
 
-    write_bindings_to_disk(env, args, output_dir)
+    write_bindings_to_disk(api_classes, env, args, output_dir)
+
     # -- END Old approach
 
 if __name__ == '__main__':
