@@ -66,6 +66,18 @@ def get_template_output(class_name, template_name):
 
 # -- END Old code --
 
+def write_bindings_to_disk(env, args, output_dir):
+    """ Input:
+    - environment to get templates from 
+    - args
+    - output_dir where to write to
+    write the bindings to disk, return Nothing """
+    for binding in args.bindings:
+        with open(os.path.join(output_dir, get_template_output(args.module_name, get_template_name(binding))), "w") as output_file:
+            template = env.get_template(binding)
+            s = render_api_and_obj_classes(api_classes, template)
+            output_file.write(s)
+
 def main(args):
     cwd = os.getcwd()
     
@@ -93,11 +105,7 @@ def main(args):
     #for f in ['to_output_ctype', 'to_ctype']:
         env.filters[f] = getattr(filters.capi_filter, f)
 
-    for t in args.bindings:
-        with open(os.path.join(output_dir, get_template_output(args.module_name, get_template_name(t))), "w") as output_file:
-            template = env.get_template(t)
-            s = render_api_and_obj_classes(api_classes, template)
-            output_file.write(s)
+    write_bindings_to_disk(env, args, output_dir)
     # -- END Old approach
 
 if __name__ == '__main__':
