@@ -1,4 +1,4 @@
-FROM FFIG/ffig-base
+FROM ffig/ffig-base
 MAINTAINER FFIG <support@ffig.org>
 
 COPY . /home/ffig
