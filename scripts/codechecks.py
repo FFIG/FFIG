@@ -10,11 +10,15 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 log = logging.getLogger('codechecks')
 
 ProcessResult = collections.namedtuple('ProcessResult',
-        ['stdout', 'stderr', 'returncode'])
+                                       ['stdout', 'stderr', 'returncode'])
+
 
 def _capture_output(command):
     '''Run command and capture the output and return code.'''
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     if len(stdout):
         log.info(stdout)
@@ -22,8 +26,10 @@ def _capture_output(command):
         log.error(stderr)
     return True if process.returncode == 0 else False
 
+
 def is_python_file(filename):
     return filename.endswith('.py')
+
 
 def python_checks(files, reformat=False):
     ''' Run pep8 checks.
@@ -46,19 +52,31 @@ def python_checks(files, reformat=False):
     command.extend(files)
     return _capture_output(command)
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Run codechecks and optionally reformat the code.')
-    parser.add_argument('--reformat', dest='reformat', action='store_true', default=False, help='Reformat the code.')
+    parser = argparse.ArgumentParser(
+        description='Run codechecks and optionally reformat the code.')
+    parser.add_argument(
+        '--reformat',
+        dest='reformat',
+        action='store_true',
+        default=False,
+        help='Reformat the code.')
     args = parser.parse_args()
-    
+
     # Get a list of all the files in this repository:
     files = subprocess.check_output(['git', 'ls-files']).split('\n')
 
     # Collect the result of each stage.
-    results = [ ]
+    results = []
 
     # Run language-specific checks on subsets of the file list:
-    results.append(python_checks(filter(is_python_file, files), reformat=args.reformat))
+    results.append(
+        python_checks(
+            filter(
+                is_python_file,
+                files),
+            reformat=args.reformat))
 
     if False in results:
         log.error('Checks failed')
