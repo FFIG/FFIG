@@ -40,8 +40,8 @@ def collect_api_and_obj_classes(classes, api_annotation):
             # if all([not m.is_pure_virtual for m in model_class.methods]):
             #    self.impls.append(model_class)
 
-    api_classes = {c.name: APIClass(
-        c) for c in classes if api_annotation in c.annotations}
+    api_classes = {c.name: APIClass(c)
+                   for c in classes if api_annotation in c.annotations}
 
     for c in classes:
         for base in c.base_classes:
