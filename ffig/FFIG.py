@@ -62,7 +62,7 @@ def write_bindings_to_disk(module_name, api_classes, env, args, output_dir):
     - output_dir where to write to
     """
     for binding in args.bindings:
-        generators.generate(module_name, binding, api_classes, env, args, output_dir)
+        generators.generate(module_name, binding, api_classes, env, output_dir)
 
 def build_model_from_source(path_to_source, module_name):
     """

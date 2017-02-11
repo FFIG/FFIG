@@ -12,7 +12,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def go_generator(module_name, binding, api_classes, env, args, output_dir):
+def go_generator(module_name, binding, api_classes, env, output_dir):
     ''' Create Go bindings in an appropriate Go package.
 
         This generator produces a directory src/modulename inside the output
@@ -36,7 +36,7 @@ def go_generator(module_name, binding, api_classes, env, args, output_dir):
         log.info('Wrote Go bindings for module {0} to {1}'.format(
             module_name, output_file_name))
 
-    return output_file_name
+    return [output_file_name]
 
 def setup_plugin(context):
     context.register(go_generator, ['go.tmpl'])
