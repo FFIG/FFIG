@@ -117,6 +117,7 @@ def _scan_plugins():
     '''
     basedir = os.path.realpath(os.path.dirname(__file__))
     log.info('Scanning for plugins in {}'.format(basedir))
+    excluded_files = ['__init__.py', '__pycache__.py']
     for entry in os.listdir(basedir):
         log.info('Checking {}'.format(entry))
         filepath = os.path.join(basedir, entry)
@@ -124,7 +125,7 @@ def _scan_plugins():
             log.info('Found plugin package {}'.format(entry))
             # This is a generator package. Import it.
             _activate_plugin(os.path.basename(entry))
-        elif os.path.isfile(filepath) and entry.endswith('.py') and entry != '__init__.py':
+        elif os.path.isfile(filepath) and entry.endswith('.py') and entry not in excluded_files:
             log.info('Found plugin module {}'.format(entry))
             _activate_plugin(os.path.basename(entry)[:-3])
 
