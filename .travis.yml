@@ -24,7 +24,7 @@ install:
 script:
   - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t"
   - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t --python-path python3"
-  - find . -name \*.py -exec pep8 {} +
+  - find ffig scripts tests -name \*.py -exec pep8 {} +
 
 notifications:
   slack:
