@@ -12,9 +12,9 @@ def generator(module_name, binding, api_classes, env, args, output_dir):
         o.write(
 """import sys
 if sys.version_info[0] == 3:  
-    from interop_py3 import *
+    from .interop_py3 import *
 else:
-    from interop_py2 import *
+    from .interop_py2 import *
 """)
     for o in [os.path.join(module_dir, x) for x in ['interop_py2.py', 'interop_py3.py']]: 
         generators.generate_single_output_file(module_name, 'py.tmpl', api_classes, env, args, o)
