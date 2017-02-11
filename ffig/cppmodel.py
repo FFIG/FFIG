@@ -60,8 +60,8 @@ class _Function(object):
             self.arguments.append(FunctionArgument(t, n))
 
     def __str__(self):
-        return '{} {}({})'.format(str(self.return_type), str(
-            self.name), ', '.join([str(a) for a in self.arguments]))
+        return '{} {}({})'.format(str(self.return_type), str(self.name),
+                                  ', '.join([str(a) for a in self.arguments]))
 
 
 class Function(_Function):
