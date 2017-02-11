@@ -117,7 +117,7 @@ def _scan_plugins():
     '''
     basedir = os.path.realpath(os.path.dirname(__file__))
     log.info('Scanning for plugins in {}'.format(basedir))
-    excluded_files = ['__init__.py', '__pycache__.py']
+    excluded_files = ['__init__.py', '__pycache__']
     for entry in os.listdir(basedir):
         log.info('Checking {}'.format(entry))
         filepath = os.path.join(basedir, entry)
