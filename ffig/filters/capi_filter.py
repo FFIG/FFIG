@@ -58,7 +58,7 @@ def c_object(v,t):
 
 
 #Python filter to translate C-type to Python ctype type
-def to_python_ctype(t):
+def to_ctype(t):
     if t.kind == TypeKind.VOID:
         return None
     if t.kind == TypeKind.INT:
@@ -75,7 +75,7 @@ def to_python_ctype(t):
             return t.pointee.name.replace('const ','')
     raise Exception('No ctypes equivalent is defined for type {}'.format(t.name))
 
-def to_python_output_ctype(t):
+def to_output_ctype(t):
     if t.kind == TypeKind.VOID:
         return None
     if t.kind == TypeKind.INT:

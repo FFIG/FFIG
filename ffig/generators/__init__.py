@@ -27,7 +27,14 @@ def get_template_output(class_name, template_name):
     extension = split_name[-1]
     return "{}{}.{}".format(class_name, suffix_name, extension)
 
-def default_generator(binding, api_classes, env, args, output_dir):
+def generate_single_output_file(module_name, binding, api_classes, env, args, output_file_name):
+    '''Generate a single named output file. Used by the default generator.'''
+    with open(output_file_name, 'w') as output_file:
+        template = env.get_template(binding)
+        output_string = render_api_and_obj_classes(api_classes, template)
+        output_file.write(output_string)
+
+def default_generator(module_name, binding, api_classes, env, args, output_dir):
     '''
     Default generator.
 
@@ -36,6 +43,7 @@ def default_generator(binding, api_classes, env, args, output_dir):
     file.
 
     Input:
+     - module_name: The name of the module to generate.
      - binding: The name of the binding to generate.
      - api_classes: The classes to generate bindings for.
      - env: The jinja2 environment.
@@ -44,11 +52,9 @@ def default_generator(binding, api_classes, env, args, output_dir):
     '''
     output_file_name = os.path.join(output_dir,
             get_template_output(args.module_name, get_template_name(binding)))
-    with open(output_file_name, 'w') as output_file:
-        template = env.get_template(binding)
-        output_string = render_api_and_obj_classes(api_classes, template)
-        output_file.write(output_string)
-    return output_file_name
+
+    generate_single_output_file(args.module_name, binding, api_classes, env, args, output_file_name)
+    #return output_file_name
 
 class GeneratorContext(object):
     '''Holds a mapping of bindings to custom generators.'''
@@ -67,11 +73,12 @@ class GeneratorContext(object):
         for binding in bindings:
             self._generator_map[binding] = generator_function
 
-    def generate(self, binding, api_classes, env, args, output_dir):
+    def generate(self, module_name, binding, api_classes, env, args, output_dir):
         '''
         Generate a set of bindings.
 
         Input:
+          - module_name: The name of the module to generate.
           - binding: The type of binding to generate.
           - api_classes: Classes to generate bindings for.
           - env: The template environment.
@@ -80,17 +87,17 @@ class GeneratorContext(object):
         log.info('Finding generator for {}'.format(binding))
         if binding in self._generator_map:
             log.info('  found in map')
-            return self._generator_map[binding](binding, api_classes, env, args, output_dir)
+            return self._generator_map[binding](module_name, binding, api_classes, env, args, output_dir)
         else:
             log.info('  using default')
-            return default_generator(binding, api_classes, env, args, output_dir)
+            return default_generator(module_name, binding, api_classes, env, args, output_dir)
 
 # This is the default generator context.
 generator_context = GeneratorContext()
 
-def generate(binding, api_classes, env, args, output_dir):
+def generate(module_name, binding, api_classes, env, args, output_dir):
     '''Forward the request to the default generator context.'''
-    return generator_context.generate(binding, api_classes, env, args, output_dir)
+    return generator_context.generate(module_name, binding, api_classes, env, args, output_dir)
 
 def _activate_plugin(module_name):
     '''Internal function used to activate a plugin that has been found.'''

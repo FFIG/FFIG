@@ -6,8 +6,8 @@
 
 import generators
 
-def go_generator(binding, api_classes, env, args, output_dir):
-    return generators.default_generator(binding, api_classes, env, args, output_dir)
+def go_generator(module_name, binding, api_classes, env, args, output_dir):
+    return generators.default_generator(module_name, binding, api_classes, env, args, output_dir)
 
 def setup_plugin(context):
     context.register(go_generator, ['go.tmpl'])
