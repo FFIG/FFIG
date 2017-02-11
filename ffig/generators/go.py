@@ -12,7 +12,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def go_generator(binding, api_classes, env, args, output_dir):
+def go_generator(module_name, binding, api_classes, env, args, output_dir):
     ''' Create Go bindings in an appropriate Go package.
 
         This generator produces a directory src/modulename inside the output
