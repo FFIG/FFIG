@@ -19,9 +19,7 @@ def generator(module_name, binding, api_classes, env, output_dir):
             module_name, 'py.tmpl', api_classes, env, o)
 
     return [
-        os.path.join(
-            module_dir,
-            x) for x in [
+        os.path.join(module_dir, x) for x in [
             '__init__.py',
             'interop_py2.py',
             'interop_py3.py']]
