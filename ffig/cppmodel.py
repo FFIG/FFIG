@@ -81,8 +81,8 @@ class Function(_Function):
             return False
         if len(self.arguments) != len(f.arguments):
             return False
-        for x, fx in zip([arg.type for arg in self.arguments], [
-                         arg.type for arg in f.arguments]):
+        for x, fx in zip([arg.type for arg in self.arguments],
+                         [arg.type for arg in f.arguments]):
             if x.name != fx.name:
                 return False
         return True
