@@ -94,7 +94,7 @@ def build_model_from_source(path_to_source, module_name):
 
 def make_output_dir(cwd, o_dir_path):
     """
-    Function that creates the output_dir under the given path in cwd, 
+    Function that creates the output_dir under the given path in cwd,
     if no such dir exists yet. Returns nothing.
     Input:
     - current working directory
