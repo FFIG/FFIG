@@ -70,7 +70,8 @@ def write_bindings_to_disk(module_name, bindings, api_classes, env, output_dir):
     """
     Write the bindings to disk, return Nothing
     Input:
-    - args from command line
+    - module_name - string
+    - list of bindings to generate
     - api_classes
     - environment to get templates from
     - output_dir where to write to
