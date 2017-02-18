@@ -20,11 +20,21 @@ import cppmodel
 import filters.capi_filter
 import generators
 
+
+def find_clang_library_path():
+    paths = [
+        '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib',
+        '/Library/Developer/CommandLineTools/usr/lib',
+    ]
+    for path in paths:
+        if os.path.isfile(os.path.join(path, 'libclang.dylib')):
+            return path
+    raise Exception('Unable to find libclang.dylib')
+
 if sys.platform == 'darwin':
     # OS X doesn't use DYLD_LIBRARY_PATH if System Integrity Protection is
     # enabled. Set the library path for libclang manually.
-    clang.cindex.Config.set_library_path(
-        '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib')
+    clang.cindex.Config.set_library_path(find_clang_library_path())
 
 ffig_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -56,16 +66,22 @@ def get_class_name(header_path):
     return re.sub(".h$", "", header_name)
 
 
-def write_bindings_to_disk(module_name, api_classes, env, output_dir):
+def write_bindings_to_disk(
+        module_name,
+        bindings,
+        api_classes,
+        env,
+        output_dir):
     """
     Write the bindings to disk, return Nothing
     Input:
+    - module_name - string
+    - list of bindings to generate
     - api_classes
     - environment to get templates from
-    - args
     - output_dir where to write to
     """
-    for binding in args.bindings:
+    for binding in bindings:
         generators.generate(module_name, binding, api_classes, env, output_dir)
 
 
@@ -135,7 +151,12 @@ def main(args):
 
     make_output_dir(cwd, args.output_dir)
     env = set_template_env(args.template_dir)
-    write_bindings_to_disk(args.module_name, api_classes, env, args.output_dir)
+    write_bindings_to_disk(
+        args.module_name,
+        list(args.bindings),
+        api_classes,
+        env,
+        args.output_dir)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
