@@ -4,12 +4,25 @@ from clang.cindex import Cursor
 from clang.cindex import TranslationUnit
 from clang.cindex import Config
 
+import os.path
 import sys
+
+
+def find_clang_library_path():
+    paths = [
+        '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib',
+        '/Library/Developer/CommandLineTools/usr/lib',
+    ]
+    for path in paths:
+        if os.path.isfile(os.path.join(path, 'libclang.dylib')):
+            return path
+    raise Exception('Unable to find libclang.dylib')
+
 if sys.platform == 'darwin':
     # OS X doesn't use DYLD_LIBRARY_PATH if System Integrity Protection is
     # enabled. Set the library path for libclang manually.
-    Config.set_library_path(
-        '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib')
+    Config.set_library_path(find_clang_library_path())
+
 
 def get_tu(source, lang='c', all_warnings=False, flags=[]):
     """Obtain a translation unit from source and language.
@@ -35,7 +48,9 @@ def get_tu(source, lang='c', all_warnings=False, flags=[]):
     if all_warnings:
         args += ['-Wall', '-Wextra']
 
-    return TranslationUnit.from_source(name, args, unsaved_files=[(name, source)])
+    return TranslationUnit.from_source(
+        name, args, unsaved_files=[(name, source)])
+
 
 def get_named_tu(source, name, all_warnings=False, flags=[]):
     """Obtain a translation unit from source and filename.
@@ -52,7 +67,8 @@ def get_named_tu(source, name, all_warnings=False, flags=[]):
     if all_warnings:
         args += ['-Wall', '-Wextra']
 
-    return TranslationUnit.from_source(name, args, unsaved_files=[(name, source)])
+    return TranslationUnit.from_source(
+        name, args, unsaved_files=[(name, source)])
 
 
 def get_cursor(source, spelling):
@@ -72,6 +88,7 @@ def get_cursor(source, spelling):
             return cursor
 
     return None
+
 
 def get_cursors(source, spelling):
     """Obtain all cursors from a source object with a specific spelling.
