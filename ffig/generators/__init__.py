@@ -6,14 +6,15 @@ import sys
 
 log = logging.getLogger(__name__)
 
+
 def dso_extension():
     extensions = {
-            'darwin': 'dylib',
-            'win32': 'dll',
-            'cygwin': 'dll',
-            'linux2': 'so',
-            'linux': 'so',
-            }
+        'darwin': 'dylib',
+        'win32': 'dll',
+        'cygwin': 'dll',
+        'linux2': 'so',
+        'linux': 'so',
+    }
     return extensions[sys.platform]
 
 
