@@ -95,6 +95,6 @@ if(Ruby_FOUND)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 endif()
 
-if(Go_FOUND)
+if(Go_FOUND AND NOT WIN32)
   add_subdirectory(tests/go)
 endif()
