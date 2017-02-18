@@ -18,23 +18,16 @@ static {{class.name}}_{{method.name}}_Ptr {{class.name}}_{{method.name}}_ptr;
 {% endfor %} 
 
 
-void write_log(const char* message) {
-    FILE* f = fopen("/Users/andrew/dl.log", "w+");
-    fprintf(f, "%s\n", message);
-    fflush(f);
-    fclose(f);
-}
-
 int init() {
-    const char* library_file = RSTR(SOURCE_PATH) "/../../lib{{class.name}}_c.dylib";
+    {% if dso_extension is equalto 'dll' %}
+    const char* library_file = RSTR(SOURCE_PATH) "\\..\\..\\lib{{class.name}}_c.{{dso_extension}}";
+    {% else %}
+    const char* library_file = RSTR(SOURCE_PATH) "/../../lib{{class.name}}_c.{{dso_extension}}";
+    {% endif %}
     // Load the module's dynamic library
-    write_log(library_file);
     char* path = realpath(library_file, NULL);
-    write_log("Loading library ");
-    write_log(path);
     void* dynamic_library = dlopen(path, RTLD_LOCAL | RTLD_LAZY);
     if (!dynamic_library) {
-        write_log(dlerror());
         return 1;
     }
 
@@ -44,10 +37,8 @@ int init() {
 
     {% for impl in impl_classes %}{% for method in impl.constructors %}
     ++status;
-    write_log("Resolving symbol {{class.name}}_{{impl.name}}_create");
     symbol = dlsym(dynamic_library, "{{class.name}}_{{impl.name}}_create");
     if (!symbol) {
-        write_log(dlerror());
         return status;
     }
     {{class.name}}_{{impl.name}}_create_ptr = ({{class.name}}_{{impl.name}}_create_Ptr)symbol;
@@ -55,10 +46,8 @@ int init() {
 
     {% for method in class.methods %}
     ++status;
-    write_log("Resolving symbol {{class.name}}_{{method.name}}");
     symbol = dlsym(dynamic_library, "{{class.name}}_{{method.name}}");
     if (!symbol) {
-        write_log(dlerror());
         return status;
     }
     {{class.name}}_{{method.name}}_ptr = ({{class.name}}_{{method.name}}_Ptr)symbol;
