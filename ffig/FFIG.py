@@ -94,14 +94,9 @@ def build_model_from_source(path_to_source, module_name):
     Returns:
     - model built from a clang.cindex TranslationUnit with a name from args
     """
-    try:
-        tu = clang.cindex.TranslationUnit.from_source(
-            path_to_source, '-x c++ -std=c++14 -stdlib=libc++'.split())
-    except TranslationUnitLoadError:
-        for diagnostic in tu.diagnostics:
-            print(diagnostic)
-        exit(1)
-
+    tu = clang.cindex.TranslationUnit.from_source(
+        path_to_source, '-x c++ -std=c++14 -stdlib=libc++'.split())
+    
     model = cppmodel.Model(tu)
     model.module_name = module_name
 
