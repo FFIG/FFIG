@@ -96,7 +96,7 @@ def build_model_from_source(path_to_source, module_name):
     """
     tu = clang.cindex.TranslationUnit.from_source(
         path_to_source, '-x c++ -std=c++14 -stdlib=libc++'.split())
-    
+
     model = cppmodel.Model(tu)
     model.module_name = module_name
 
