@@ -22,8 +22,10 @@ install:
   - docker build -t ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} .
 
 script:
-  - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t -c ASAN"
-  - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t -c ASAN --python-path python3"
+  - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -T CPP|PYTHON|MOCKS|RUBY -c ASAN"
+  - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -T CPP|PYTHON|MOCKS|RUBY -c ASAN --python-path python3"
+  - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t"
+  - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t --python-path python3"
   - ./scripts/codechecks.py
 
 notifications:
