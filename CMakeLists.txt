@@ -11,6 +11,13 @@ else()
   add_compile_options("-std=c++14")
 endif()
 
+if(NOT WIN32)
+  set(CMAKE_CXX_FLAGS_ASAN "-g -fno-omit-frame-pointer -O0 -fsanitize=address")
+  set(CMAKE_C_FLAGS_ASAN "-g -fno-omit-frame-pointer -O0 -fsanitize=address")
+  set(CMAKE_EXE_LINKER_FLAGS_ASAN "-fsanitize=address")
+  set(CMAKE_SHARED_LINKER_FLAGS_ASAN "-fsanitize=address")
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(ffig)
 
