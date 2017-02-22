@@ -109,5 +109,4 @@ endif()
 
 if(Go_FOUND AND NOT WIN32)
   add_subdirectory(tests/go)
-  set_property(TEST test_go_Shape PROPERTY LABELS GO)
 endif()
