@@ -3880,7 +3880,7 @@ def register_function(lib, item, ignore_errors):
     # incompatible version of libclang.so.
     try:
         func = _PyCFunctionWrapper(lib, *item)
-        setattr(lib, item[0], f)
+        setattr(lib, item[0], func)
     except AttributeError as e:
         msg = str(e) + ". Please ensure that your python bindings are "\
                        "compatible with your libclang.so version."
