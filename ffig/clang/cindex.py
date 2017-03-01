@@ -70,25 +70,28 @@ import clang.enumerations
 import sys
 if sys.version_info[0] == 3:
     # Python 3 strings are unicode, translate them to/from utf8 for C-interop.
-    class c_interop_string(c_char_p):
+    class _PyCFunctionWrapper(object):
 
-        def __init__(self, p=None):
-            if p is None:
-                p = ""
-            if isinstance(p, str):
-                p = p.encode("utf8")
-            super(c_char_p, self).__init__(p)
+        def __init__(self, lib, name, argtypes, restype, errcheck=None):
+            self.f = getattr(lib, name)
+            self.f.argtypes = argtypes
+            self.f.restype = restype
+            if errcheck:
+                self.f.errcheck = errcheck
 
-        @property
-        def value(self):
-            return super(c_char_p, self).value.decode("utf8")
+        def __call__(self, *args):
+            def unicode_to_utf8(x):
+                if isinstance(x, str):
+                    return x.encode('utf8')
+                return x
 
-        @classmethod
-        def from_param(cls, param):
-            return cls(param)
+            def utf8_to_unicode(x):
+                if isinstance(x, bytes):
+                    return x.decode('utf8')
+                return x
 
-    def _utf8_to_python_string(x, *args):
-        return x.decode("utf8")
+            cargs = (unicode_to_utf8(x) for x in args)
+            return utf8_to_unicode(self.f(*cargs))
 
     def b(x):
         if isinstance(x, bytes):
@@ -98,10 +101,17 @@ if sys.version_info[0] == 3:
 elif sys.version_info[0] == 2:
     # Python 2 strings are utf8 byte strings, no translation is needed for
     # C-interop.
-    c_interop_string = c_char_p
+    class _PyCFunctionWrapper(object):
 
-    def _utf8_to_python_string(x, *args):
-        return x
+        def __init__(self, lib, name, argtypes, restype, errcheck=None):
+            self.f = getattr(lib, name)
+            self.f.argtypes = argtypes
+            self.f.restype = restype
+            if errcheck:
+                self.f.errcheck = errcheck
+
+        def __call__(self, *args):
+            return self.f(*args)
 
     def b(x):
         return x
@@ -3172,7 +3182,7 @@ functionList = [
         [c_object_p]),
 
     ("clang_CompilationDatabase_fromDirectory",
-        [c_interop_string, POINTER(c_uint)],
+        [c_char_p, POINTER(c_uint)],
         c_object_p,
         CompilationDatabase.from_result),
 
@@ -3182,7 +3192,7 @@ functionList = [
         CompileCommands.from_result),
 
     ("clang_CompilationDatabase_getCompileCommands",
-        [c_object_p, c_interop_string],
+        [c_object_p, c_char_p],
         c_object_p,
         CompileCommands.from_result),
 
@@ -3217,7 +3227,7 @@ functionList = [
         c_uint),
 
     ("clang_codeCompleteAt",
-        [TranslationUnit, c_interop_string, c_int, c_int, c_void_p, c_int, c_int],
+        [TranslationUnit, c_char_p, c_int, c_int, c_void_p, c_int, c_int],
         POINTER(CCRStructure)),
 
     ("clang_codeCompleteGetDiagnostic",
@@ -3233,7 +3243,7 @@ functionList = [
         c_object_p),
 
     ("clang_createTranslationUnit",
-        [Index, c_interop_string],
+        [Index, c_char_p],
         c_object_p),
 
     ("clang_CXXConstructor_isConvertingConstructor",
@@ -3383,8 +3393,7 @@ functionList = [
 
     ("clang_getCString",
         [_CXString],
-        c_char_p,
-        _utf8_to_python_string),
+        c_char_p),
 
     ("clang_getCursor",
         [TranslationUnit, SourceLocation],
@@ -3531,7 +3540,7 @@ functionList = [
         Type.from_result),
 
     ("clang_getFile",
-        [TranslationUnit, c_interop_string],
+        [TranslationUnit, c_char_p],
         c_object_p),
 
     ("clang_getFileName",
@@ -3660,8 +3669,7 @@ functionList = [
 
     ("clang_getTUResourceUsageName",
         [c_uint],
-        c_interop_string,
-        _utf8_to_python_string),
+        c_char_p),
 
     ("clang_getTypeDeclaration",
         [Type],
@@ -3756,7 +3764,7 @@ functionList = [
         bool),
 
     ("clang_parseTranslationUnit",
-        [Index, c_interop_string, c_void_p, c_int, c_void_p, c_int, c_int],
+        [Index, c_char_p, c_void_p, c_int, c_void_p, c_int, c_int],
         c_object_p),
 
     ("clang_reparseTranslationUnit",
@@ -3764,7 +3772,7 @@ functionList = [
         c_int),
 
     ("clang_saveTranslationUnit",
-        [TranslationUnit, c_interop_string, c_uint],
+        [TranslationUnit, c_char_p, c_uint],
         c_int),
 
     ("clang_tokenize",
@@ -3836,7 +3844,7 @@ functionList = [
         Type.from_result),
 
     ("clang_Type_getOffsetOf",
-        [Type, c_interop_string],
+        [Type, c_char_p],
         c_longlong),
 
     ("clang_Type_getSizeOf",
@@ -3871,22 +3879,14 @@ def register_function(lib, item, ignore_errors):
     # A function may not exist, if these bindings are used with an older or
     # incompatible version of libclang.so.
     try:
-        func = getattr(lib, item[0])
+        func = _PyCFunctionWrapper(lib, *item)
+        setattr(lib, item[0], func)
     except AttributeError as e:
         msg = str(e) + ". Please ensure that your python bindings are "\
                        "compatible with your libclang.so version."
         if ignore_errors:
             return
         raise LibclangError(msg)
-
-    if len(item) >= 2:
-        func.argtypes = item[1]
-
-    if len(item) >= 3:
-        func.restype = item[2]
-
-    if len(item) == 4:
-        func.errcheck = item[3]
 
 
 def register_functions(lib, ignore_errors):
