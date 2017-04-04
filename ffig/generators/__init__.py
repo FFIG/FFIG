@@ -51,8 +51,8 @@ def generate_single_output_file(
         output_file_name):
     '''Generate a single named output file. Used by the default generator.'''
     with open(output_file_name, 'w') as output_file:
-        template=env.get_template(binding)
-        output_string=render_api_and_obj_classes(
+        template = env.get_template(binding)
+        output_string = render_api_and_obj_classes(
             module_name, api_classes, template)
         output_file.write(output_string)
 
@@ -72,11 +72,11 @@ def default_generator(module_name, binding, api_classes, env, output_dir):
      - env: The jinja2 environment.
      - output_dir: The base directory for generator output.
     '''
-    template=env.get_template(binding)
-    output_string=render_api_and_obj_classes(
+    template = env.get_template(binding)
+    output_string = render_api_and_obj_classes(
         module_name, api_classes, template)
 
-    output_file_name=os.path.join(
+    output_file_name = os.path.join(
         output_dir, get_template_output(
             module_name, get_template_name(binding)))
     generate_single_output_file(
@@ -93,7 +93,7 @@ class GeneratorContext(object):
 
     def __init__(self):
         '''Initialise with no custom generators'''
-        self._generator_map={}
+        self._generator_map = {}
 
     def register(self, generator_function, bindings):
         '''
@@ -104,7 +104,7 @@ class GeneratorContext(object):
          - bindings: List of bindings that this function generates.
         '''
         for binding in bindings:
-            self._generator_map[binding]=generator_function
+            self._generator_map[binding] = generator_function
 
     def generate(self, module_name, binding, api_classes, env, output_dir):
         '''
@@ -128,7 +128,7 @@ class GeneratorContext(object):
                 module_name, binding, api_classes, env, output_dir)
 
 # This is the default generator context.
-generator_context=GeneratorContext()
+generator_context = GeneratorContext()
 
 
 def generate(module_name, binding, api_classes, env, output_dir):
@@ -140,9 +140,9 @@ def generate(module_name, binding, api_classes, env, output_dir):
 def _activate_plugin(module_name):
     '''Internal function used to activate a plugin that has been found.'''
     log.info('Importing {}'.format(module_name))
-    module=__import__(
+    module = __import__(
         'generators.{0}'.format(module_name),
-        fromlist = ['setup_plugin'])
+        fromlist=['setup_plugin'])
     module.setup_plugin(generator_context)
 
 
@@ -163,15 +163,15 @@ def _scan_plugins():
 
             f(module_name, binding, api_classes, env, output_dir)
     '''
-    basedir=os.path.realpath(os.path.dirname(__file__))
+    basedir = os.path.realpath(os.path.dirname(__file__))
     log.info('Scanning for plugins in {}'.format(basedir))
-    excluded_files=['__init__.py', '__pycache__']
+    excluded_files = ['__init__.py', '__pycache__']
     for entry in os.listdir(basedir):
         log.info('Checking {}'.format(entry))
         if entry in excluded_files:
             log.info('Skipping excluded file {}'.format(entry))
             continue
-        filepath=os.path.join(basedir, entry)
+        filepath = os.path.join(basedir, entry)
         if os.path.isdir(filepath):
             log.info('Found plugin package {}'.format(entry))
             # This is a generator package. Import it.
