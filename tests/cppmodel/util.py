@@ -9,6 +9,7 @@ import sys
 
 Config.set_compatibility_check(False)
 
+
 def find_clang_library_path():
     paths = [
         '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib',

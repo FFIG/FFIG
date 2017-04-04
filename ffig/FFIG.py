@@ -22,6 +22,7 @@ import generators
 
 clang.cindex.Config.set_compatibility_check(False)
 
+
 def find_clang_library_path():
     paths = [
         '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib',
@@ -38,6 +39,7 @@ if sys.platform == 'darwin':
     clang.cindex.Config.set_library_path(find_clang_library_path())
 
 ffig_dir = os.path.abspath(os.path.dirname(__file__))
+
 
 def collect_api_and_obj_classes(classes, api_annotation):
     class APIClass:
