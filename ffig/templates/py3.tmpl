@@ -102,9 +102,8 @@ methodList = [
   ("{{class.name}}_{{ impl.name }}_create",
   [{% for arg in method.arguments %}{{arg.type|to_py3_ctype}}, {% endfor %}POINTER(c_object_p)],
   c_int),{% endfor %}{% endfor %} {% for method in class.methods %}
-
   ("{{ class.name }}_{{method.name}}",
-  [{{class.name}}{% for arg in method.arguments %}, {{arg.type|to_py3_ctype}} {% endfor %}{% if not method.returns_void %}, POINTER({{method.return_type|to_output_py3_ctype}}){% endif %}],
+  [{{class.name}}{% for arg in method.arguments %}, {{arg.type|to_py3_ctype}}{% endfor %}{% if not method.returns_void %}, POINTER({{method.return_type|to_output_py3_ctype}}){% endif %}],
   c_int){% if not loop.last %},{% endif %}{% endfor %}
 ]
 
