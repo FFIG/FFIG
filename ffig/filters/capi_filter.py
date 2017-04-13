@@ -67,6 +67,7 @@ def to_go_convert(t):
             return 'unsafe.Pointer'
     raise Exception('Type {} has no known Go equivalent'.format(t.name))
 
+
 def to_go_method_name(m):
     '''
     Returns the method name with the first character uppercased.
@@ -75,6 +76,7 @@ def to_go_method_name(m):
     module interface.
     '''
     return m.capitalize()
+
 
 def go_object(v, t):
     '''
@@ -87,6 +89,8 @@ def go_object(v, t):
         return v
 
 # C++ header filter to extract C type from C++ type
+
+
 def c_object(v, t):
     if t.kind == TypeKind.VOID:
         return v
