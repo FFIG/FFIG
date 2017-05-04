@@ -92,6 +92,7 @@ def test_string_representation():
     assert str(functions[0]) == 'double foo(int, char)'
     assert str(functions[1]) == 'double bar(int x, char y)'
 
+
 def test_force_noexcept():
     source = """
     double foo(int, char);

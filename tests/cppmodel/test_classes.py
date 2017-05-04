@@ -178,6 +178,7 @@ def test_string_representation():
     assert str(methods[2]) == 'virtual int foobar() = 0'
     assert str(methods[3]) == 'virtual int cfoobar(int x) const = 0'
 
+
 def test_noexcept():
     source = """
     class A {
