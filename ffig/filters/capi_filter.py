@@ -97,9 +97,9 @@ def to_hint_type(t):
         if t.pointee.kind == TypeKind.CHAR_S:
             return 'str'
         if t.pointee.kind == TypeKind.RECORD:
-            # This is a hack until we can get an unqualified type from libclang
-            # FIXME: Return the class name when doing so can be made to work.
-            return 'Any'
+            # This is encoding the assumption that the name of a binding class
+            # is the same as the name of the underlying C++ class. 
+            return to_cpp_type(t)
     raise Exception('No ctypes equivalent is defined for type {}'.format(t.name))
 
 def to_cpp_type(t):

@@ -31,7 +31,7 @@ class {{class.name}}_error(Exception):
 
 class {{class.name}}(object):
   {% if not class.is_abstract %} {% for method in class.constructors %}
-  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None):
+  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None) -> '{{class.name}}':
     if _p:
       self.ptr = _p
     else:
@@ -39,7 +39,7 @@ class {{class.name}}(object):
       rc = conf.lib.{{class.name}}_{{ class.name }}_create({% for arg in method.arguments %}{{arg.name}},{% endfor %} byref(self.ptr))
       if rc != 0:
         raise {{class.name}}_error()
-  {% endfor %} {% endif %} {% for method in class.methods %}
+  {% endfor %} {% endif %}{% for method in class.methods %}
   def {{method.name}}(self{% for arg in method.arguments %}, {{arg.name}}: '{{arg.type|to_hint_type}}' {% endfor %}) -> '{{method.return_type|to_hint_type}}': {% if method.returns_void %}
     rc = conf.lib.{{class.name}}_{{method.name}}(self, {% for arg in method.arguments %}{{arg.name}}{% if not loop.last %}, {% endif %}{% endfor %})
     if rc != 0:
@@ -63,7 +63,7 @@ class {{class.name}}(object):
     conf.lib.{{class.name}}_dispose(self)
 
 {% for impl in impl_classes %}class {{impl.name}}({{class.name}}): {% for method in impl.constructors %}
-  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None):
+  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None) -> '{{impl.name}}':
     if _p:
       self.ptr = _p
     else:
