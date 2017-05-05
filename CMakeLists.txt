@@ -11,6 +11,13 @@ else()
   add_compile_options("-std=c++14")
 endif()
 
+if(NOT WIN32)
+  set(CMAKE_CXX_FLAGS_ASAN "-g -fno-omit-frame-pointer -O0 -fsanitize=address")
+  set(CMAKE_C_FLAGS_ASAN "-g -fno-omit-frame-pointer -O0 -fsanitize=address")
+  set(CMAKE_EXE_LINKER_FLAGS_ASAN "-fsanitize=address")
+  set(CMAKE_SHARED_LINKER_FLAGS_ASAN "-fsanitize=address")
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(ffig)
 
@@ -55,14 +62,11 @@ if(Go_FOUND)
   list(APPEND all_ffig_bindings "GO")
 endif()
 
-ffig_add_library(NAME Shape INPUTS input/Shape.h ${all_ffig_bindings})
-ffig_add_library(NAME Tree INPUTS input/Tree.h PYTHON CPP)
-ffig_add_library(NAME Asset INPUTS input/Asset.h PYTHON)
+ffig_add_library(NAME Shape INPUTS tests/input/Shape.h ${all_ffig_bindings})
+ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP)
+ffig_add_library(NAME Asset INPUTS tests/input/Asset.h PYTHON)
     
 add_subdirectory(tests/src)
-if(Go_FOUND)
-  add_subdirectory(tests/go)
-endif()
 
 enable_testing()
 
@@ -75,32 +79,34 @@ add_test(
   NAME test_python_bindings
   COMMAND ${PYTHON_EXECUTABLE} -m nose -v ${CMAKE_SOURCE_DIR}/tests
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+set_property(TEST test_python_bindings PROPERTY LABELS PYTHON)
 
 add_test(
   NAME test_cpp_mocks
   COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestShapeMocks
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+set_property(TEST test_cpp_mocks PROPERTY LABELS MOCKS)
 
 add_test(
   NAME test_cpp_circle
   COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppCircle
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+set_property(TEST test_cpp_circle PROPERTY LABELS CPP)
 
 add_test(
   NAME test_cpp_tree
   COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppTree
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
 if(Ruby_FOUND)
   add_test(
     NAME test_ruby_bindings
     COMMAND ${RUBY_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/TestShape.rb ${CMAKE_SOURCE_DIR}/tests/TestShape.rb
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+  set_property(TEST test_ruby_bindings PROPERTY LABELS RUBY)
 endif()
 
-if(Go_FOUND)
-  add_test(
-    NAME test_Shape
-    COMMAND ${CMAKE_BINARY_DIR}/tests/go/test_Shape
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
+if(Go_FOUND AND NOT WIN32)
+  add_subdirectory(tests/go)
 endif()

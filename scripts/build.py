@@ -2,6 +2,7 @@
 import sys
 import os
 import platform
+import shutil
 import subprocess
 
 
@@ -9,9 +10,17 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--clean', help='remove build directory before build', action='store_true', dest='clean')
-    parser.add_argument(
+        '--clean',
+        help='remove build directory before build',
+        action='store_true',
+        dest='clean')
+
+    test_options = parser.add_mutually_exclusive_group()
+    test_options.add_argument(
         '-t', help='run tests', action='store_true', dest='run_tests')
+    test_options.add_argument(
+        '-T', help='run labelled tests', dest='labelled_tests')
+
     parser.add_argument(
         '-v', help='verbose', action='store_true', dest='verbose')
     parser.add_argument(
@@ -41,10 +50,10 @@ def main():
 
     src_dir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 
-    if args.clean:
-        subprocess.check_call('rm -rf {}'.format(args.out_dir).split())
+    if args.clean and os.path.exists(args.out_dir):
+        shutil.rmtree(args.out_dir)
 
-    cmake_invocation = ['cmake', '.','-B{}'.format(args.out_dir)]
+    cmake_invocation = ['cmake', '.', '-B{}'.format(args.out_dir)]
     if args.platform == 'Windows':
         if args.win32:
             cmake_invocation.extend(['-G', 'Visual Studio 14 2015'])
@@ -56,18 +65,24 @@ def main():
     if args.verbose:
         cmake_invocation.append('-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON')
     if args.python_path:
-        cmake_invocation.append('-DPYTHON_EXECUTABLE={}'.format(args.python_path))
+        cmake_invocation.append(
+            '-DPYTHON_EXECUTABLE={}'.format(args.python_path))
 
     subprocess.check_call(cmake_invocation, cwd=src_dir)
     subprocess.check_call(
         'cmake --build ./{}'.format(args.out_dir).split(), cwd=src_dir)
 
+    rc = 0
     if args.run_tests:
         rc = subprocess.call(
             'ctest . --output-on-failure -C {}'.format(args.config).split(),
             cwd=os.path.join(src_dir, args.out_dir))
-        if rc != 0:
-            sys.exit(1)
+    elif args.labelled_tests:
+        rc = subprocess.call(
+            'ctest . --output-on-failure -C {} -L {}'.format(args.config, args.labelled_tests).split(),
+            cwd=os.path.join(src_dir, args.out_dir))
+    if rc != 0:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

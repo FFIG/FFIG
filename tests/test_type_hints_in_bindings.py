@@ -54,7 +54,7 @@ def test_type_hints_for_class_method_with_one_argument():
 
     assert len(hs) == 2
     assert hs["return"] == int
-    assert hs["s"] == Shape
+    assert hs["s"] == AbstractShape
 
 
 @python3only
