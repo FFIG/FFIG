@@ -2,7 +2,7 @@ from Asset import *
 from Shape import *
 from Tree import *
 
-if sys.version_info[0] = 3:
+if sys.version_info[0] == 3:
     from typing import *
 
 from nose.tools import make_decorator
@@ -12,7 +12,7 @@ def python3only(func):
     name = func.__name__
 
     def newfunc(*arg, **kw):
-        if sys.version_info[0] = 3:
+        if sys.version_info[0] == 3:
             func(*arg, **kw)
     newfunc = make_decorator(func)(newfunc)
     return newfunc
