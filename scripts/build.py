@@ -53,14 +53,14 @@ def main():
     if args.clean and os.path.exists(args.out_dir):
         shutil.rmtree(args.out_dir)
 
-    cmake_invocation = ['cmake', '.', '-B{}'.format(args.out_dir), '-GNinja']
+    cmake_invocation = ['cmake', '.', '-B{}'.format(args.out_dir)]
     if args.platform == 'Windows':
         if args.win32:
             cmake_invocation.extend(['-G', 'Visual Studio 14 2015'])
         else:
             cmake_invocation.extend(['-G', 'Visual Studio 14 2015 Win64'])
     else:
-        cmake_invocation.append('-DCMAKE_BUILD_TYPE={}'.format(args.config))
+        cmake_invocation.extend(['-GNinja', '-DCMAKE_BUILD_TYPE={}'.format(args.config)])
 
     if args.verbose:
         cmake_invocation.append('-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON')
