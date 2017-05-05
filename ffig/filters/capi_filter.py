@@ -147,7 +147,9 @@ def to_hint_type(t):
             # This is encoding the assumption that the name of a binding class
             # is the same as the name of the underlying C++ class.
             return to_cpp_type(t)
-    raise Exception('No ctypes equivalent is defined for type {}'.format(t.name))
+    raise Exception(
+        'No ctypes equivalent is defined for type {}'.format(
+            t.name))
 
 
 def to_output_py3_ctype(t):
