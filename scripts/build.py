@@ -53,7 +53,7 @@ def main():
     if args.clean and os.path.exists(args.out_dir):
         shutil.rmtree(args.out_dir)
 
-    cmake_invocation = ['cmake', '.', '-B{}'.format(args.out_dir)]
+    cmake_invocation = ['cmake', '.', '-B{}'.format(args.out_dir), '-GNinja']
     if args.platform == 'Windows':
         if args.win32:
             cmake_invocation.extend(['-G', 'Visual Studio 14 2015'])
