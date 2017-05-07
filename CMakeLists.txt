@@ -8,7 +8,7 @@ project(test_ffig)
 if(MSVC)
   add_compile_options("/EHsc")
 else()
-  add_compile_options("-std=c++14")
+  add_compile_options("-std=c++14;-Werror")
 endif()
 
 if(NOT WIN32)

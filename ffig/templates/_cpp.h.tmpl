@@ -6,12 +6,12 @@
 #include "{{module.name}}_c.h"
 namespace CPP_API {
 
-
 class {{class.name}}
 {
 protected:
   const void* object_ = nullptr;
   {{class.name}}() = default;
+  {{class.name}}(const void* p) : object_(p) {}
 
 public:
   {% if not class.is_abstract %}{% for method in class.constructors %}
@@ -51,6 +51,16 @@ public:
     {{module.name}}_{{class.name}}_dispose(object_);
   }
 {% for method in class.methods %}
+{% if method.is_noexcept %}
+  {{method.return_type|to_cpp_type}} {{method.name}}({% for arg in method.arguments %}{%if not loop.first %}, {% endif %}{{arg.type}} {{arg.name}}{% endfor %}) const
+  {
+    {% if method.returns_void %} {{module.name}}_{{class.name}}_{{method.name}}(object_{% for arg in method.arguments %}, {{arg.name|c_object(arg.type)}}{% endfor %});
+    {% else %}{% if not method.returns_sub_object %}
+    return {{module.name}}_{{class.name}}_{{method.name}}(object_{% for arg in method.arguments %}, {{arg.name|c_object(arg.type)}}{% endfor %});
+    {% else %} return {{method.return_type|to_cpp_type}}({{module.name}}_{{class.name}}_{{method.name}}(object_{% for arg in method.arguments %}, {{arg.name|c_object(arg.type)}}{% endfor %}));{% endif %}
+    {% endif %}
+  }
+{% else %}
   {{method.return_type|to_cpp_type}} {{method.name}}({% for arg in method.arguments %}{%if not loop.first %}, {% endif %}{{arg.type}} {{arg.name}}{% endfor %}) const
   {
     {% if method.returns_void %} int rc = {{module.name}}_{{class.name}}_{{method.name}}(object_{% for arg in method.arguments %}, {{arg.name|c_object(arg.type)}}{% endfor %});
@@ -60,7 +70,7 @@ public:
     {% endif %}if (rc == {{module.name}}_RC_SUCCESS) return{% if not method.returns_void %} rv{% endif %};
     throw exception();
   }
-{%endfor%}
+{% endif %}{%endfor%}
 };
 {% for impl in impl_classes %}
 class {{impl.name}} : public {{class.name}}
@@ -74,4 +84,4 @@ public:
   }{% endfor %}
 };
 {% endfor %}
-} // end namespace CPP_API
+} // end namespace 

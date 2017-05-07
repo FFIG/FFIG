@@ -11,11 +11,11 @@ static std::mt19937 mt;
 static std::uniform_int_distribution<int> d(1,10);
 static auto gen = []{return d(mt);};
 
-class Tree
+class C_API Tree
 {
   int data_;
-  std::shared_ptr<Tree> left_;
-  std::shared_ptr<Tree> right_;
+  std::unique_ptr<Tree> left_;
+  std::unique_ptr<Tree> right_;
 
   public:
 
@@ -23,8 +23,8 @@ class Tree
   {
     data_ = gen();
     if ( levels <= 0 ) return;
-    left_ = std::make_shared<Tree>(levels-1);
-    right_ = std::make_shared<Tree>(levels-1);
+    left_ = std::make_unique<Tree>(levels-1);
+    right_ = std::make_unique<Tree>(levels-1);
   }
 
   const Tree* left_subtree() const
@@ -37,6 +37,11 @@ class Tree
     return right_.get();
   }
 
+  void erase_data() 
+  {
+    data_ = 0;
+  }
+
   int data() const
   {
     return data_;
@@ -47,5 +52,5 @@ class Tree
     data_ = x;
   }
 
-} C_API;
+};
 
