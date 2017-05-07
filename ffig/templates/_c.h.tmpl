@@ -17,9 +17,7 @@
 #define EXPORT extern "C" __attribute__((visibility("default")))
 #endif
 
-#define FFIG_DEFINE_CAPI_TYPE(module, class) struct module##_##class##_t; typedef const void* module##_##class
-FFIG_DEFINE_CAPI_TYPE({{module.name}}, {{class.name}});
-#undef FFIG_DEFINE_CAPI_TYPE
+typedef const void* {{module.name}}_{{class.name}};
 
 #ifdef __cplusplus
 extern "C"
