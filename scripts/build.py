@@ -11,7 +11,7 @@ def check_for_executable(exe_name, args=['--version']):
         cmd.extend(args)
         subprocess.check_output(cmd)
         return True
-    except:
+    except subprocess.CalledProcessError:
         return False
 
 def main():
