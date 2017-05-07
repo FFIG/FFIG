@@ -5,6 +5,7 @@ import platform
 import shutil
 import subprocess
 
+
 def check_for_executable(exe_name, args=['--version']):
     try:
         cmd = [exe_name]
@@ -13,6 +14,7 @@ def check_for_executable(exe_name, args=['--version']):
         return True
     except subprocess.CalledProcessError:
         return False
+
 
 def main():
     import argparse
