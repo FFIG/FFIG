@@ -82,8 +82,8 @@ def to_go_method_name(m):
 
 def go_object(a):
     '''
-    In analogy to the `c_object` filter below, this returns `a.ptr` for objects
-    of class type, and `a` for everything else.
+    In analogy to the `c_object` filter below, this returns `a.name.ptr` for objects
+    of class type, and `a.name` for everything else.
     '''
     t = a.type
     n = a.name
