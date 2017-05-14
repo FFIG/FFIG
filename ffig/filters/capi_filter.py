@@ -27,7 +27,7 @@ def restore_cpp_type(a):
 
 
 # C filter to convert C++ type to C equivalent
-def to_c(t, m):
+def to_c(t, m='Tree'):
     if t.kind == TypeKind.VOID:
         return 'void'
     if t.kind == TypeKind.INT:
@@ -41,25 +41,6 @@ def to_c(t, m):
             return 'const char*'
         if t.pointee.kind == TypeKind.RECORD:
             return '{}_{}'.format(m, t.pointee.name.replace('const ', ''))
-    raise Exception('Type {} has no known c equivalent'.format(t.name))
-
-
-# Go filter to convert C++ type to C equivalent suitable for go-bindings
-# FIXME: remove the need for this function, `to_c` should suffice.
-def to_cgo(t):
-    if t.kind == TypeKind.VOID:
-        return 'void'
-    if t.kind == TypeKind.INT:
-        return 'int'
-    if t.kind == TypeKind.DOUBLE:
-        return 'double'
-    if t.kind == TypeKind.BOOL:
-        return 'unsigned'
-    if t.kind == TypeKind.POINTER:
-        if t.pointee.kind == TypeKind.CHAR_S:
-            return 'const char*'
-        if t.pointee.kind == TypeKind.RECORD:
-            return 'void *'
     raise Exception('Type {} has no known c equivalent'.format(t.name))
 
 
