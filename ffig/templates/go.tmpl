@@ -10,7 +10,6 @@ import "C"
 
 import (
     "os"
-    "unsafe"
 )
 
 func init() {
@@ -20,7 +19,7 @@ func init() {
 }
 
 type {{class.name}} struct {
-    ptr unsafe.Pointer
+    ptr C.{{module.name}}_{{class.name}}
 }
 
 {% for impl in impl_classes %}
