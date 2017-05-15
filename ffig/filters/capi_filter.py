@@ -27,7 +27,7 @@ def restore_cpp_type(a):
 
 
 # C filter to convert C++ type to C equivalent
-def to_c(t, m='Tree'):
+def to_c(t, m):
     if t.kind == TypeKind.VOID:
         return 'void'
     if t.kind == TypeKind.INT:
