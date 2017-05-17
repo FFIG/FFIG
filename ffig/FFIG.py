@@ -134,7 +134,7 @@ def run(args):
     cwd = os.getcwd()
 
     # FIXME: Remove the need for this constraint.
-    if len(args.inputs) != 1:
+    if len(args.inputs) > 1:
         raise Exception("Multiple input files are currently not supported.")
 
     # FIXME: Loop over files and extend the model once we can handle multiple
@@ -166,7 +166,9 @@ def main():
         '-i', '--input',
         nargs='+',
         help='header files for input',
-        dest='inputs')
+        default=[],
+        dest='inputs',
+        required=True)
     parser.add_argument(
         '--libclang',
         help='path to libclang',
@@ -197,6 +199,3 @@ def main():
     args = parser.parse_args()
 
     run(args)
-
-if __name__ == '__main__':
-    main()
