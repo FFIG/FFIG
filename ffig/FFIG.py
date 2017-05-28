@@ -17,7 +17,7 @@ import sys
 logging.basicConfig(level=logging.WARNING)
 
 import ffig.cppmodel
-import filters.capi_filter
+import ffig.filters.capi_filter
 import ffig.generators
 
 clang.cindex.Config.set_compatibility_check(False)
