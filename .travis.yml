@@ -26,8 +26,9 @@ matrix:
         - ./scripts/codechecks.py
 
     - os: osx
+      language: generic
       install:
-        - brew install cmake go ninja
+        - brew install cmake go ninja python python3
         - pip2 install --upgrade pip && pip2 install jinja2 nose backports.typing
         - pip3 install --upgrade pip && pip3 install jinja2 nose
         - gem install ffi
