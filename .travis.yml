@@ -14,17 +14,26 @@ matrix:
       services:
         - docker
       install:
-        - ./scripts/travis-ci/install_linux.sh
+        - docker pull ffig/ffig-base
+        - docker built -t ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT}
       before_install:
         - pip install pep8
       script:
-        - ./scripts/travis-ci/build_linux.sh
+        - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN"
+        - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python3"
+        - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t"
+        - docker run ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} /bin/bash -c "./scripts/build.py -t --python-path python3"
         - ./scripts/codechecks.py
+
     - os: osx
       install:
-        - ./scripts/travis-ci/install_osx.sh
+        - brew install cmake go ninja
+        - pip2 install --upgrade pip && pip2 install jinja2 nose backports.typing
+        - pip3 install --upgrade pip && pip3 install jinja2 nose
+        - gem install ffi
       script:
-        - ./scripts/travis-ci/build_osx.sh
+        - ./scripts/build.py -t
+        - ./scripts/build.py -t --python-path python3
 
 notifications:
   slack:
