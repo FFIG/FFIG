@@ -27,6 +27,7 @@ matrix:
 
     - os: osx
       language: generic
+      osx_image: xcode8.3
       install:
         - brew install ninja python3
         - pip2 install --upgrade pip && pip2 install jinja2 nose backports.typing
