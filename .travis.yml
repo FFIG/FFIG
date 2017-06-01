@@ -30,8 +30,8 @@ matrix:
       osx_image: xcode8.3
       install:
         - brew install ninja python3
-        - pip2 install --upgrade pip && pip2 install jinja2 nose backports.typing
-        - pip3 install --upgrade pip && pip3 install jinja2 nose
+        - sudo pip2 install --upgrade pip && sudo pip2 install jinja2 nose backports.typing
+        - sudo pip3 install --upgrade pip && sudo pip3 install jinja2 nose
         - gem install ffi
       script:
         - ./scripts/build.py -t
