@@ -29,8 +29,8 @@ matrix:
       language: generic
       osx_image: xcode8.3
       install:
-        - brew install ninja python3 ruby
-        - brew link --overwrite ruby
+        - brew update && brew install ninja python3 ruby-build rbenv
+        - rbenv install 2.4.1 && rbenv global 2.4.1
         - sudo pip2 install --upgrade pip && sudo pip2 install jinja2 nose backports.typing
         - sudo pip3 install --upgrade pip && sudo pip3 install jinja2 nose
         - gem install ffi
