@@ -8,9 +8,10 @@
  #                items that are converted to strings. The text to output for
  #                each item is the body of the {% call %} block.
  #   ''.join(
- #   {%- call(item) comma_separated_list(items) -%}
- #      str({{item}})
- #   {%- endcall -%}
+ #       {%- call(item) comma_separated_list(items) -%}
+ #          str({{item}})
+ #       {%- endcall -%}
+ #   )
  #}
 {%- macro comma_separated_list(items, leading_comma=False, trailing_comma=False) -%}
     {%- for item in items -%}
