@@ -46,7 +46,7 @@ class {{module.name}}_error(Exception):
 
 class {{class.name}}:
   {% if not class.is_abstract %} {% for method in class.constructors %}
-  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None) -> '{{class.name}}':
+  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None) -> None:
     if _p:
       self.ptr = _p
     else:
@@ -78,7 +78,7 @@ class {{class.name}}:
     conf.lib.{{module.name}}_{{class.name}}_dispose(self)
 
 {% for impl in impl_classes %}class {{impl.name}}({{class.name}}): {% for method in impl.constructors %}
-  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None) -> '{{impl.name}}':
+  def __init__(self, {% for arg in method.arguments %} {{arg.name}}: '{{arg.type|to_hint_type}}'=None,{% endfor %} _p=None) -> None:
     if _p:
       self.ptr = _p
     else:

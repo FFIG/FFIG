@@ -24,7 +24,7 @@ def test_type_hints_for_class_initialisor():
     hs = get_type_hints(p.__init__)
 
     assert len(hs) == 2
-    assert hs["return"] == Tree
+    assert hs["return"] == type(None)
     assert hs["levels"] == Union[int, type(None)]
 
 
@@ -34,7 +34,7 @@ def test_type_hints_for_initialisor_of_impl_class():
     hs = get_type_hints(p.__init__)
 
     assert len(hs) == 2
-    assert hs["return"] == Pentagon
+    assert hs["return"] == type(None)
     assert hs["side"] == Union[float, type(None)]
 
 
