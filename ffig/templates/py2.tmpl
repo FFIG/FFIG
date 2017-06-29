@@ -94,7 +94,7 @@ class {{class.name}}:
     if rc != 0:
       raise {{module.name}}_error()
   {%- elif not method.returns_sub_object %}
-    rv = {{method.return_type|to_output_py3_ctype}}()
+    rv = {{method.return_type|to_output_py2_ctype}}()
     rc = conf.lib.{{module.name}}_{{class.name}}_{{method.name}}(self {{method_arguments(method, leading_comma=True)}}, byref(rv))
     if rc == 0:
       return rv.value
@@ -104,7 +104,7 @@ class {{class.name}}:
     rc = conf.lib.{{module.name}}_{{class.name}}_{{method.name}}(self {{method_arguments(method, leading_comma=True)}}, byref(rv))
     if rc == 0:
       {% if method.returns_nullable %}if not bool(rv): return None{% endif %}
-      return {{method.return_type|to_py3_ctype}}(_p=rv)
+      return {{method.return_type|to_py2_ctype}}(_p=rv)
     raise {{module.name}}_error()
   {%- endif %}
   {% endfor %}
@@ -158,7 +158,7 @@ methodList = [
 {%- for method in class.methods %}
   ("{{module.name}}_{{ class.name }}_{{method.name}}",
   [{{class.name}}{{method_argument_types(method, leading_comma=True)}}
-{%- if not method.returns_void %}, POINTER({{method.return_type|to_output_py3_ctype}}){% endif %}],
+{%- if not method.returns_void %}, POINTER({{method.return_type|to_output_py2_ctype}}){% endif %}],
   c_int){% if not loop.last %},{% endif -%}
 {%- endfor %}
 ]
