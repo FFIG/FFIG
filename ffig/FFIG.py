@@ -97,7 +97,8 @@ def build_model_from_source(
     """
     ffig_include_dir = os.path.join(os.path.dirname(__file__), 'include')
     tu = clang.cindex.TranslationUnit.from_source(
-        path_to_source, '-x c++ -std=c++14 -stdlib=libc++ -I{}'.format(ffig_include_dir).split())
+        path_to_source,
+        '-x c++ -std=c++14 -stdlib=libc++ -I{}'.format(ffig_include_dir).split())
 
     model = ffig.cppmodel.Model(tu, treat_methods_as_noexcept)
     model.module_name = module_name
@@ -144,7 +145,7 @@ def run(args):
     input_file = os.path.join(cwd, args.inputs[0])
     m = build_model_from_source(input_file, args.module_name, args.noexcept)
     classes = m.classes
-    api_classes = collect_api_and_obj_classes(classes, 'GENERATE_C_API')
+    api_classes = collect_api_and_obj_classes(classes, 'FFIG:EXPORT')
 
     make_output_dir(cwd, args.output_dir)
     env = set_template_env(args.template_dir)
