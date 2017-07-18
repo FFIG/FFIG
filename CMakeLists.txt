@@ -28,7 +28,7 @@ include_directories(ffig/include)
 
 # Check that the found version of Python==3 on Windows.
 # Trust the user if they have supplied their own.
-# FIXME: Get to the botton of the libclang/ctypes issues with Python2.
+# FIXME: Get to the bottom of the libclang/ctypes issues with Python2.
 if(NOT PYTHON_EXECUTABLE)
   find_package(PythonInterp REQUIRED)
   if(WIN32)
@@ -55,6 +55,9 @@ endif()
 # Look for Ruby
 find_package(Ruby)
 
+# Look for Lua
+find_package(Lua)
+
 set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS")
 if(Ruby_FOUND)
   list(APPEND all_ffig_bindings "RUBY")
@@ -66,7 +69,7 @@ endif()
 
 ffig_add_library(NAME Shape INPUTS tests/input/Shape.h ${all_ffig_bindings})
 ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP)
-ffig_add_library(NAME Asset INPUTS tests/input/Asset.h PYTHON)
+ffig_add_library(NAME Asset INPUTS tests/input/Asset.h PYTHON LUA)
     
 add_subdirectory(tests/src)
 
@@ -101,6 +104,15 @@ add_test(
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
+if(Lua_FOUND)
+  # FIXME: The relative paths here (and in the lua test file) are very brittle.
+  add_test(
+    NAME test_asset_lua
+    COMMAND lua ${CMAKE_SOURCE_DIR}/tests/test_asset_bindings.lua
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+  set_property(TEST test_asset_lua PROPERTY LABELS LUA)
+endif()
+
 if(Ruby_FOUND)
   add_test(
     NAME test_ruby_bindings
@@ -112,3 +124,4 @@ endif()
 if(Go_FOUND AND NOT WIN32)
   add_subdirectory(tests/go)
 endif()
+

@@ -1,0 +1,15 @@
+{{class.name}} = {}
+
+function {{class.name}}:new(o)
+  local o = o or {}
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end       
+
+{% for method in class.methods %}
+function {{class.name}}:{{method.name}}()
+  return "I'm afraid I can't do that"
+end
+{% endfor %}
+
