@@ -54,9 +54,19 @@ endif()
 
 # Look for Ruby
 find_package(Ruby)
+if(NOT Ruby_FOUND)
+  message(STATUS "Ruby tests disabled: Ruby interpreter not found.")
+endif()
 
 # Look for Lua
-find_package(Lua)
+# FIXME: Make this less hacky.
+execute_process(COMMAND luajit -e "print('testing')" RESULT_VARIABLE result OUTPUT_QUIET ERROR_QUIET)
+if(result)
+  message(STATUS "Lua tests disabled: luajit cannot execute a simple Lua script.")
+else()
+  set(LuaJIT_FOUND 1)
+  set(LuaJIT_EXECUTABLE "luajit")
+endif()
 
 set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS")
 if(Ruby_FOUND)
@@ -104,11 +114,11 @@ add_test(
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
-if(Lua_FOUND)
+if(LuaJIT_FOUND)
   # FIXME: The relative paths here (and in the lua test file) are very brittle.
   add_test(
     NAME test_asset_lua
-    COMMAND lua ${CMAKE_SOURCE_DIR}/tests/test_asset_bindings.lua
+    COMMAND ${LuaJIT_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_asset_bindings.lua
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
   set_property(TEST test_asset_lua PROPERTY LABELS LUA)
 endif()
