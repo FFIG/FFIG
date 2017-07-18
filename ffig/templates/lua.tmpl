@@ -1,11 +1,23 @@
+local ffi = require("ffi")
+ffi.cdef[[
+  const char* {{module.name}}_error();
+  void {{module.name}}_clear_error();
+]]
+
+local lib{{module.name}} = ffi.load("{{module.name}}_c")
+
 {{class.name}} = {}
+
+function {{module.name}}_error()
+  return ffi.string(lib{{module.name}}.{{module.name}}_error())
+end
 
 function {{class.name}}:new(o)
   local o = o or {}
   setmetatable(o, self)
   self.__index = self
   return o
-end       
+end
 
 {% for method in class.methods %}
 function {{class.name}}:{{method.name}}()

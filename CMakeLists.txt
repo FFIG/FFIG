@@ -119,7 +119,7 @@ if(LuaJIT_FOUND)
   add_test(
     NAME test_asset_lua
     COMMAND ${LuaJIT_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_asset_bindings.lua
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
   set_property(TEST test_asset_lua PROPERTY LABELS LUA)
 endif()
 
