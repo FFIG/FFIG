@@ -2,9 +2,9 @@ require("Asset")
 
 assert(Asset_error() == "")
 
-a = Asset:new()
+a = CDO:new()
 
 assert(a:name() == "CDO")
 
-assert(a:value() == 0.0)
+assert(a:value() == 99.99)
 

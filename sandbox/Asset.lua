@@ -17,12 +17,12 @@ function Asset_error()
 end
 
 function Asset:new(o)
-  o = o or {}
+  local o = o or {}
   setmetatable(o, self)
   self.__index = self
-  ptr = ffi.new("void*[1]")
-  libAsset.Asset_CDO_create(ptr)
-  o.ptr = ptr[0]
+  v = ffi.new("void*[1]")
+  libAsset.Asset_CDO_create(v)
+  o.ptr = v[0]
   return o
 end       
 
@@ -33,7 +33,7 @@ function Asset:value()
 end
 
 function Asset:name()
-  v = ffi.new("const char*[1]")
+  v = ffi.new("const char *[1]")
   rc = libAsset.Asset_Asset_name(self.ptr, v)
   return ffi.string(v[0])
 end
