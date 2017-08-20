@@ -164,9 +164,8 @@ class Model(object):
         self.add_child_nodes(translation_unit.cursor, [], force_noexcept)
 
     def __repr__(self):
-        return "<cppmodel.Model filename={}, classes={}, functions={}>".format(self.filename,
-                                                                               [c.name for c in self.classes],
-                                                                               [f.name for f in self.functions])
+        return "<cppmodel.Model filename={}, classes={}, functions={}>".format(
+            self.filename, [c.name for c in self.classes], [f.name for f in self.functions])
 
     def extend(self, translation_unit):
         m = Model(translation_unit)

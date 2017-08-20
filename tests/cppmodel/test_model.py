@@ -11,4 +11,5 @@ def test_repr():
     model = ffig.cppmodel.Model(tu)
 
     assert_equals(
-        str(model), "<cppmodel.Model filename=t.cpp, classes=['A'], functions=['foo']>")
+        str(model),
+        "<cppmodel.Model filename=t.cpp, classes=['A'], functions=['foo']>")

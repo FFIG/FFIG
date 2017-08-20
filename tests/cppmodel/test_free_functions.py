@@ -104,5 +104,5 @@ def test_force_noexcept():
     functions = model.functions
 
     assert_equals(str(functions[0]),
-                 '<cppmodel.Function double foo(int, char) noexcept>')
+                  '<cppmodel.Function double foo(int, char) noexcept>')
     assert functions[0].is_noexcept
