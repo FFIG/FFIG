@@ -57,6 +57,8 @@ The build uses cmake driven by a simple Python script. To build and run tests, r
 
 **Build status (on Travis-CI):** [![Build Status](https://travis-ci.org/FFIG/ffig.svg?branch=master)](https://travis-ci.org/FFIG/ffig)
 
+**Build status (on AppVeyor):** [![Build Status](https://ci.appveyor.com/api/projects/status/github/ffig/ffig?branch=master)](https://ci.appveyor.com/project/jbcoe/ffig?branch=master)
+
 
 # Issues
 
@@ -67,6 +69,15 @@ Please raise github issues if code cannot be generated where expected or if gene
 
 Contributions are very welcome, please look at unassigned github issues or raise issues for suggested improvements.
 
+# Git Hooks
+
+We have a Git pre-push hook, `scripts/pre-push.py`, which runs the code
+formatting checks (`scripts/codechecks.py`) and prevents a push happening if
+the code checks failed. This avoids a CI test cycle for simple formatting
+errors.
+
+To install this git hook, you can run `scripts/install-git-hooks.py`, which
+will link the script into your `.git/hooks` directory.
 
 # Attribution
 
