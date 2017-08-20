@@ -63,7 +63,7 @@ def main():
     args = parser.parse_args()
     args.platform = platform.system()
 
-    src_dir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
+    src_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
     if args.clean and os.path.exists(args.out_dir):
         shutil.rmtree(args.out_dir)
