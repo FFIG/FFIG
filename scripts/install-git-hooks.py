@@ -17,5 +17,5 @@ for hook_script in hook_scripts:
             'Skipping {0} because {1} already exists'.format(
                 target, link_name))
     else:
-        print('Installing symbolic link {0} --> {1}'.format(target, link_name))
+        print('Installing symbolic link {0} --> {1}'.format(link_name, target))
         os.symlink(target, link_name)
