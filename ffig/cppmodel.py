@@ -21,8 +21,11 @@ class Type:
         else:
             self.pointee = None
 
-    def __str__(self):
+    def __repr__(self):
         return "<cppmodel.Type {}>".format(self.name)
+
+    def __str__(self):
+        return self.name
 
 
 class Member:
