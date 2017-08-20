@@ -46,7 +46,8 @@ def collect_api_and_obj_classes(classes, api_annotation):
     class APIClass:
 
         def __init__(self, model_class):
-            self.api_class = ffig.annotations.apply_class_annotations(model_class)
+            self.api_class = ffig.annotations.apply_class_annotations(
+                model_class)
             self.impls = []
 
     api_classes = {c.name: APIClass(c)

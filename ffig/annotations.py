@@ -1,5 +1,6 @@
 from ffig.clang.cindex import CursorKind, TypeKind
 
+
 def _set_impl_name(o):
     o.impl_name = o.name
     names = [a for a in o.annotations if a.startswith("FFIG:NAME:")]

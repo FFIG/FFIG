@@ -193,4 +193,3 @@ class Model(object):
                 child_namespaces = list(namespaces)
                 child_namespaces.append(c.spelling)
                 self.add_child_nodes(c, child_namespaces)
-
