@@ -1,6 +1,6 @@
 import os
 import sys
-from ffig.clang.cindex import AccessSpecifier, CursorKind, TypeKind
+from ffig.clang.cindex import AccessSpecifier, CursorKind, TypeKind, Diagnostic
 
 
 def _get_annotations(node):
@@ -157,7 +157,16 @@ class Class(object):
 
 class Model(object):
 
+    def _check_translation_unit(self, translation_unit):
+        if len([d for d in translation_unit.diagnostics if d.severity == Diagnostic.error]) != 0:
+            e = "Compile errors in translation unit {}:".format(
+                translation_unit.spelling)
+            for d in translation_unit.diagnostics:
+                e += "\n  {}".format(d)
+            raise Exception(e)
+
     def __init__(self, translation_unit, force_noexcept=False):
+        self._check_translation_unit(translation_unit)
         self.filename = translation_unit.spelling
         self.functions = []
         self.classes = []
@@ -209,5 +218,5 @@ class Model(object):
         # library implementation details.
         self.functions = [
             f for f in self.functions if not f.name.startswith('__')]
-        self.classes = [
-            c for c in self.classes if not len(c.name) == 0 and not c.name.startswith('__')]
+        self.classes = [c for c in self.classes if not len(
+            c.name) == 0 and not c.name.startswith('__')]
