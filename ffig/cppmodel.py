@@ -1,6 +1,6 @@
 import os
 import sys
-from ffig.clang.cindex import AccessSpecifier, CursorKind, TypeKind
+from ffig.clang.cindex import AccessSpecifier, CursorKind, TypeKind, Diagnostic
 
 
 def _get_annotations(node):
@@ -158,8 +158,8 @@ class Class(object):
 class Model(object):
 
     def _check_translation_unit(self, translation_unit):
-        if len(translation_unit.diagnostics) != 0:
-            e = "Compiler warnings or errors in translation unit {}:".format(
+        if len([d for d in translation_unit.diagnostics if d.severity == Diagnostic.error]) != 0:
+            e = "Compile errors in translation unit {}:".format(
                 translation_unit.spelling)
             for d in translation_unit.diagnostics:
                 e += "\n  {}".format(d)
