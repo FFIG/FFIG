@@ -78,11 +78,11 @@ class {{module.name}}_error(Exception):
 class {{class.name}}:
   {% if not class.is_abstract -%}
   @classmethod
-  def from_capi(klass, ptr):
+  def from_capi(cls, ptr):
     assert(isinstance(ptr, c_object_p))
     if not bool(ptr): 
       return None
-    return klass(_p=ptr)
+    return cls(_p=ptr)
 {%- for method in class.constructors %}
   def __init__(self, {{constructor_parameters(method, trailing_comma=True)}} _p=None):
     if _p:
@@ -127,11 +127,11 @@ class {{class.name}}:
 
 {% for impl in class.impls %}class {{impl.name}}({{class.name}}):
   @classmethod
-  def from_capi(klass, ptr):
+  def from_capi(cls, ptr):
     assert(isinstance(ptr, c_object_p))
     if not bool(ptr): 
       return None
-    return klass(_p=ptr)
+    return cls(_p=ptr)
 {% for method in impl.constructors %}
   def __init__(self, {{constructor_parameters(method, trailing_comma=True)}} _p=None):
     if _p:
