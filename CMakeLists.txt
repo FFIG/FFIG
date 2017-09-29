@@ -78,7 +78,7 @@ if(Go_FOUND)
 endif()
 
 ffig_add_library(NAME Shape INPUTS tests/input/Shape.h ${all_ffig_bindings})
-ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP)
+ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP DOTNET)
 ffig_add_library(NAME Asset INPUTS tests/input/Asset.h PYTHON LUA)
 ffig_add_library(NAME Animal INPUTS tests/input/Animal.h PYTHON)
     
@@ -123,7 +123,12 @@ set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
 add_test(
   NAME test_dotnet_shape_output
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/output/Shape.cs ${CMAKE_BINARY_DIR}/generated/Shape.cs)
+  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Shape.cs ${CMAKE_BINARY_DIR}/generated/Shape.cs)
+set_property(TEST test_cpp_tree PROPERTY LABELS DOTNET)
+
+add_test(
+  NAME test_dotnet_tree_output
+  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Tree.cs ${CMAKE_BINARY_DIR}/generated/Tree.cs)
 set_property(TEST test_cpp_tree PROPERTY LABELS DOTNET)
 
 if(LuaJIT_FOUND)
