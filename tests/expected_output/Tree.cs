@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Tree_c {
+namespace Tree {
 
   public class Exception : System.Exception {
 
@@ -41,19 +41,16 @@ namespace Tree_c {
     protected IntPtr c_obj_;
   
     public Tree(int levels) {
-      int rc = Tree_Tree_create(levels, out c_obj_);
+      int rc = Tree_Tree_create(int levels, out c_obj_);
       if(rc != 0) {
-        throw new Tree_c.Exception();
+        throw new Tree.Exception();
       }
     }
   
-    protected Tree() {
-    }
-
     protected Tree(IntPtr c_obj) {
       c_obj_ = c_obj;
     }
-    
+
     ~Tree() {
       Tree_Tree_dispose(c_obj_);
     }
@@ -62,31 +59,31 @@ namespace Tree_c {
       IntPtr rv = IntPtr.Zero;
       int rc = Tree_Tree_left_subtree(c_obj_, out rv);
       if(rc != 0) {
-        throw new Tree_c.Exception();
+        throw new Tree.Exception();
       }
       if(rv == IntPtr.Zero) { 
-        return null; 
+        return nil; 
       }
-      return new Tree(rv);
+      return Tree(rv);
     }
   
     public Tree right_subtree() {
       IntPtr rv = IntPtr.Zero;
       int rc = Tree_Tree_right_subtree(c_obj_, out rv);
       if(rc != 0) {
-        throw new Tree_c.Exception();
+        throw new Tree.Exception();
       }
       if(rv == IntPtr.Zero) { 
-        return null; 
+        return nil; 
       }
-      return new Tree(rv);
+      return Tree(rv);
     }
   
     public int data() {
       int rv;
       int rc = Tree_Tree_data(c_obj_, out rv);
       if(rc != 0) {
-        throw new Tree_c.Exception();
+        throw new Tree.Exception();
       }
       return rv;
     }
@@ -94,7 +91,7 @@ namespace Tree_c {
     public void set_data(int x) {
       int rc = Tree_Tree_set_data(c_obj_, x);
       if(rc != 0) {
-        throw new Tree_c.Exception();
+        throw new Tree.Exception();
       }
     }
   }
