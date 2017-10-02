@@ -94,7 +94,13 @@ endif()
 
 # Add FFIG build targets
 ffig_add_library(NAME Shape INPUTS tests/input/Shape.h ${all_ffig_bindings})
-ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP DOTNET)
+
+if(CSharp_FOUND)
+  ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP DOTNET)
+else()
+  ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP)
+endif()
+
 ffig_add_library(NAME Asset INPUTS tests/input/Asset.h PYTHON LUA)
 ffig_add_library(NAME Animal INPUTS tests/input/Animal.h PYTHON)
     
@@ -137,15 +143,22 @@ add_test(
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
-add_test(
-  NAME test_dotnet_shape_output
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Shape.cs ${CMAKE_BINARY_DIR}/generated/Shape.cs)
-set_property(TEST test_cpp_tree PROPERTY LABELS DOTNET)
+if(CSharp_FOUND)
+  add_test(
+    NAME test_dotnet_shape_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Shape.cs ${CMAKE_BINARY_DIR}/generated/Shape.cs)
+  set_property(TEST test_dotnet_shape_output PROPERTY LABELS DOTNET)
 
-add_test(
-  NAME test_dotnet_tree_output
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Tree.cs ${CMAKE_BINARY_DIR}/generated/Tree.cs)
-set_property(TEST test_cpp_tree PROPERTY LABELS DOTNET)
+  add_test(
+    NAME test_dotnet_tree_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Tree.cs ${CMAKE_BINARY_DIR}/generated/Tree.cs)
+  set_property(TEST test_dotnet_tree_output PROPERTY LABELS DOTNET)
+
+  add_test(
+    NAME test_dotnet_parse_source
+    COMMAND ${CSharp_COMPILER} --parse ${CMAKE_BINARY_DIR}/generated/Shape.cs ${CMAKE_BINARY_DIR}/generated/Tree.cs)
+  set_property(TEST test_dotnet_parse_source PROPERTY LABELS DOTNET)
+endif()
 
 if(LuaJIT_FOUND)
   # FIXME: The relative paths here (and in the lua test file) are very brittle.

@@ -37,10 +37,13 @@ namespace Shape_c {
   
     protected IntPtr c_obj_;
   
+    protected AbstractShape() {
+    }
+
     protected AbstractShape(IntPtr c_obj) {
       c_obj_ = c_obj;
     }
-
+    
     ~AbstractShape() {
       Shape_AbstractShape_dispose(c_obj_);
     }
@@ -49,7 +52,7 @@ namespace Shape_c {
       double rv;
       int rc = Shape_AbstractShape_area(c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return rv;
     }
@@ -58,7 +61,7 @@ namespace Shape_c {
       double rv;
       int rc = Shape_AbstractShape_perimeter(c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return rv;
     }
@@ -67,7 +70,7 @@ namespace Shape_c {
       IntPtr rv = IntPtr.Zero;
       int rc = Shape_AbstractShape_name(c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return Marshal.PtrToStringAnsi(rv);
     }
@@ -76,7 +79,7 @@ namespace Shape_c {
       int rv;
       int rc = Shape_AbstractShape_is_equal(c_obj_, s.c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return rv;
     }
@@ -90,7 +93,7 @@ namespace Shape_c {
     public Circle(double radius) {
       int rc = Shape_Circle_create(radius, out c_obj_);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
     }
   }
@@ -103,7 +106,7 @@ namespace Shape_c {
     public Square(double side) {
       int rc = Shape_Square_create(side, out c_obj_);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
     }
   }
@@ -116,7 +119,7 @@ namespace Shape_c {
     public Pentagon(double side) {
       int rc = Shape_Pentagon_create(side, out c_obj_);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
     }
   }

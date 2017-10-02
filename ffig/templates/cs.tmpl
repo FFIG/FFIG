@@ -83,17 +83,20 @@ namespace {{module.name}}_c {
   {% if not class.is_abstract -%}
   {% for method in class.constructors %}
     public {{class.name}}({{method_parameters(method)}}) {
-      int rc = {{module.name}}_{{class.name}}_create({{method_parameters(method, trailing_comma=True)}}out c_obj_);
+      int rc = {{module.name}}_{{class.name}}_create({{method_arguments(method, trailing_comma=True)}}out c_obj_);
       if(rc != 0) {
-        throw new {{module.name}}.Exception();
+        throw new {{module.name}}_c.Exception();
       }
     }
   {% endfor -%}
   {% endif %}
+    protected {{class.name}}() {
+    }
+
     protected {{class.name}}(IntPtr c_obj) {
       c_obj_ = c_obj;
     }
-
+    
     ~{{class.name}}() {
       {{module.name}}_{{class.name}}_dispose(c_obj_);
     }
@@ -103,10 +106,10 @@ namespace {{module.name}}_c {
       {{method.return_type|to_dotnet_output_value("rv")}};
       int rc = {{module.name}}_{{class.name}}_{{method.name}}(c_obj_, {{method_arguments(method, trailing_comma=True)}}out rv);
       if(rc != 0) {
-        throw new {{module.name}}.Exception();
+        throw new {{module.name}}_c.Exception();
       }
       {% if method.returns_nullable %}if(rv == IntPtr.Zero) { 
-        return nil; 
+        return null; 
       }
       {% endif -%}
       return {{method.return_type|to_dotnet_return_value("rv")}};
@@ -115,7 +118,7 @@ namespace {{module.name}}_c {
     public void {{method.name}}({{method_parameters(method)}}) {
       int rc = {{module.name}}_{{class.name}}_{{method.name}}(c_obj_, {{method_arguments(method)}});
       if(rc != 0) {
-        throw new {{module.name}}.Exception();
+        throw new {{module.name}}_c.Exception();
       }
     }
     {%- endif %}
@@ -130,7 +133,7 @@ namespace {{module.name}}_c {
     public {{impl.name}}({{method_parameters(method)}}) {
       int rc = {{module.name}}_{{impl.name}}_create({{method_arguments(method, trailing_comma=True)}}out c_obj_);
       if(rc != 0) {
-        throw new {{module.name}}.Exception();
+        throw new {{module.name}}_c.Exception();
       }
     }
   {%- endfor %}
