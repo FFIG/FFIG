@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Shape {
+namespace Shape_c {
 
   public class Exception : System.Exception {
 
@@ -37,10 +37,13 @@ namespace Shape {
   
     protected IntPtr c_obj_;
   
+    protected AbstractShape() {
+    }
+
     protected AbstractShape(IntPtr c_obj) {
       c_obj_ = c_obj;
     }
-
+    
     ~AbstractShape() {
       Shape_AbstractShape_dispose(c_obj_);
     }
@@ -49,7 +52,7 @@ namespace Shape {
       double rv;
       int rc = Shape_AbstractShape_area(c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return rv;
     }
@@ -58,7 +61,7 @@ namespace Shape {
       double rv;
       int rc = Shape_AbstractShape_perimeter(c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return rv;
     }
@@ -67,7 +70,7 @@ namespace Shape {
       IntPtr rv = IntPtr.Zero;
       int rc = Shape_AbstractShape_name(c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return Marshal.PtrToStringAnsi(rv);
     }
@@ -76,13 +79,13 @@ namespace Shape {
       int rv;
       int rc = Shape_AbstractShape_is_equal(c_obj_, s.c_obj_, out rv);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
       return rv;
     }
   }
   
-  public class Circle : Shape.AbstractShape {
+  public class Circle : Shape_c.AbstractShape {
     
     [DllImport("libShape_c.dylib")]
     private static extern int Shape_Circle_create(double radius, out IntPtr ptr);
@@ -90,12 +93,12 @@ namespace Shape {
     public Circle(double radius) {
       int rc = Shape_Circle_create(radius, out c_obj_);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
     }
   }
   
-  public class Square : Shape.AbstractShape {
+  public class Square : Shape_c.AbstractShape {
     
     [DllImport("libShape_c.dylib")]
     private static extern int Shape_Square_create(double side, out IntPtr ptr);
@@ -103,12 +106,12 @@ namespace Shape {
     public Square(double side) {
       int rc = Shape_Square_create(side, out c_obj_);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
     }
   }
   
-  public class Pentagon : Shape.AbstractShape {
+  public class Pentagon : Shape_c.AbstractShape {
     
     [DllImport("libShape_c.dylib")]
     private static extern int Shape_Pentagon_create(double side, out IntPtr ptr);
@@ -116,7 +119,7 @@ namespace Shape {
     public Pentagon(double side) {
       int rc = Shape_Pentagon_create(side, out c_obj_);
       if(rc != 0) {
-        throw new Shape.Exception();
+        throw new Shape_c.Exception();
       }
     }
   }
