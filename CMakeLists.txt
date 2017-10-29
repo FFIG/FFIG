@@ -126,37 +126,41 @@ set_property(TEST test_python_bindings PROPERTY LABELS PYTHON)
 
 add_test(
   NAME test_cpp_mocks
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestShapeMocks
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestShapeMocks --order rand --rng-seed time
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_mocks PROPERTY LABELS MOCKS)
 
 add_test(
   NAME test_cpp_circle
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppCircle
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppCircle --order rand --rng-seed time
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_circle PROPERTY LABELS CPP)
 
 add_test(
   NAME test_tree_capi
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestTreeCAPI
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestTreeCAPI --order rand --rng-seed time
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_tree_capi PROPERTY LABELS C)
 
 add_test(
   NAME test_cpp_tree
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppTree
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppTree --order rand --rng-seed time
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
 if(dotnet_FOUND)
   add_test(
     NAME test_dotnet_shape_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Shape.cs ${CMAKE_BINARY_DIR}/generated/Shape.cs)
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py 
+    ${CMAKE_SOURCE_DIR}/tests/expected_output/Shape.cs.expected 
+    ${CMAKE_BINARY_DIR}/generated/Shape.cs)
   set_property(TEST test_dotnet_shape_output PROPERTY LABELS DOTNET)
 
   add_test(
     NAME test_dotnet_tree_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py ${CMAKE_SOURCE_DIR}/tests/expected_output/Tree.cs ${CMAKE_BINARY_DIR}/generated/Tree.cs)
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/pydiff.py 
+    ${CMAKE_SOURCE_DIR}/tests/expected_output/Tree.cs.expected 
+    ${CMAKE_BINARY_DIR}/generated/Tree.cs)
   set_property(TEST test_dotnet_tree_output PROPERTY LABELS DOTNET)
 
   add_test(
