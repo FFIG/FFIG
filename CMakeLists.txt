@@ -158,7 +158,7 @@ if(dotnet_FOUND)
 
   add_test(
     NAME test_dotnet
-    COMMAND sh ${CMAKE_SOURCE_DIR}/scripts/dotnet.sh ${CMAKE_BINARY_DIR}/generated)
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/dotnet.py ${CMAKE_BINARY_DIR}/generated)
   set_property(TEST test_dotnet PROPERTY LABELS DOTNET)
 
 endif()
