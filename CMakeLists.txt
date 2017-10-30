@@ -76,6 +76,9 @@ if(result)
   message(STATUS "Dotnet tests disabled: dotnet executable not found.")
 else()
   set(dotnet_FOUND 1)
+  configure_file(${CMAKE_SOURCE_DIR}/tests/dotnet/TestShape.cs.in ${CMAKE_BINARY_DIR}/generated/TestShape.cs)
+  configure_file(${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs.in ${CMAKE_BINARY_DIR}/generated/TestTree.cs)
+  configure_file(${CMAKE_SOURCE_DIR}/tests/dotnet/ffig.net.csproj.in ${CMAKE_BINARY_DIR}/generated/ffig.net.csproj)
 endif()
 
 set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS")
@@ -155,7 +158,7 @@ if(dotnet_FOUND)
 
   add_test(
     NAME test_dotnet
-    COMMAND sh ${CMAKE_SOURCE_DIR}/scripts/dotnet.sh ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}/generated)
+    COMMAND sh ${CMAKE_SOURCE_DIR}/scripts/dotnet.sh ${CMAKE_BINARY_DIR}/generated)
   set_property(TEST test_dotnet PROPERTY LABELS DOTNET)
 
 endif()
