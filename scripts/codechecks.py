@@ -44,12 +44,12 @@ def python_checks(files, reformat=False):
     ]
 
     if reformat:
-        command = ['autopep8', '--aggressive', '--aggressive', '--in-place']
+        command = ['python', '-m', 'autopep8', '--aggressive', '--aggressive', '--in-place']
         command.extend(files)
         if not _capture_output(command):
             return False
 
-    command = ['autopep8', '--ignore={0}'.format(','.join(ignored))]
+    command = ['python', '-m', 'autopep8', '--ignore={0}'.format(','.join(ignored))]
     return all([_capture_output(command + [f]) for f in files])
 
 
