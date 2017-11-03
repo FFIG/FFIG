@@ -3,9 +3,8 @@
  #   Format a list of items separated by commas. Each item is formatted
  #   according to the callback body. Leading and trailing commas can be
  #   added by setting leading_comma or trailing_comma to True.
- #   An optional extra parameter can be passed, which is provided to the
- #   callback. If no extra parameter is passed, the callback is expected
- #   to have only one parameter.
+ #   Optional extra parameters can be passed at the end. These are
+ #   forwarded to the callback.
  #
  # Usage example: The example below generates Python code to join a list of
  #                items that are converted to strings. The text to output for
@@ -16,14 +15,10 @@
  #       {%- endcall -%}
  #   )
  #}
-{%- macro comma_separated_list(items, leading_comma=False, trailing_comma=False, extraParam=None) -%}
+{%- macro comma_separated_list(items, leading_comma=False, trailing_comma=False) -%}
     {%- for item in items -%}
         {%- if leading_comma and loop.first %}, {% endif -%}
-        {%- if extraParam -%}
-            {{ caller(item, extraParam) }}
-        {%- else -%}
-            {{ caller(item) }}
-        {%- endif -%}
+            {{ caller(item, *varargs) }}
         {%- if trailing_comma or not loop.last %}, {% endif -%}
     {%- endfor -%}
 {%- endmacro -%}
