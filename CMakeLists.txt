@@ -126,25 +126,25 @@ set_property(TEST test_python_bindings PROPERTY LABELS PYTHON)
 
 add_test(
   NAME test_cpp_mocks
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestShapeMocks --order rand --rng-seed time
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestShapeMocks
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_mocks PROPERTY LABELS MOCKS)
 
 add_test(
   NAME test_cpp_circle
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppCircle --order rand --rng-seed time
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppCircle
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_circle PROPERTY LABELS CPP)
 
 add_test(
   NAME test_tree_capi
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestTreeCAPI --order rand --rng-seed time
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestTreeCAPI
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_tree_capi PROPERTY LABELS C)
 
 add_test(
   NAME test_cpp_tree
-  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppTree --order rand --rng-seed time
+  COMMAND ${CMAKE_BINARY_DIR}/tests/src/TestCppTree
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated)
 set_property(TEST test_cpp_tree PROPERTY LABELS CPP)
 
