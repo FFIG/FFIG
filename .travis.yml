@@ -1,4 +1,4 @@
-# Modify this line to test Travis Integration ....
+# Modify this line to test Travis Integration ...
 sudo: required
 
 language: python
@@ -23,13 +23,13 @@ matrix:
 
     - os: osx
       language: generic
-      osx_image: xcode8
+      osx_image: xcode9.2
       install:
         - brew update
         - brew install ninja python3
         - brew cask install caskroom/cask/dotnet
-        - sudo pip2 install --upgrade pip && sudo pip2 install jinja2 nose
-        - sudo pip3 install --upgrade pip && sudo pip3 install jinja2 nose
+        - pip2 install --user --upgrade pip && pip2 install --user jinja2 nose pycodestyle
+        - pip3 install --user --upgrade pip && pip3 install --user jinja2 nose pycodestyle
         - gem install ffi
       script:
         - ./scripts/build.py -t
