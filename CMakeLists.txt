@@ -19,7 +19,6 @@ if(NOT WIN32)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-include(dotnet)
 include(ffig)
 
 include_directories(externals/catch/include)
