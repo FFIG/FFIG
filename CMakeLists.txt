@@ -105,10 +105,12 @@ ffig_add_library(NAME Animal INPUTS tests/input/Animal.h PYTHON)
 # build dotnet test dll
 # FIXME: Work out how to get dependencies calculated more robustly
 if(dotnet_FOUND)
-  file(GLOB TEST_INPUT ${CMAKE_SOURCE_DIR}/tests/input/*.h)
+  set(DOTNET_FFIG_OUTPUTS ${CMAKE_BINARY_DIR}/generated/Shape.cs;${CMAKE_BINARY_DIR}/generated/Tree.cs)
+  file(GLOB DOTNET_TEST_INPUTS ${CMAKE_SOURCE_DIR}/tests/dotnet/*)
+
   add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/generated/ffig.net.dll
     COMMAND dotnet build ffig.net.csproj -o .
-    DEPENDS ${CMAKE_BINARY_DIR}/generated/Shape.cs;${CMAKE_BINARY_DIR}/generated/Tree.cs
+    DEPENDS ${DOTNET_TEST_INPUTS};${DOTNET_FFIG_OUTPUTS}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated
     COMMENT "Building DOTNET assembly ffig.net.dll")
   add_custom_target(ffig.net ALL
