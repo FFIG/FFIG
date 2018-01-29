@@ -79,8 +79,6 @@ if(NOT WIN32)
     message(STATUS "Dotnet tests disabled: dotnet executable not found.")
   else()
     set(dotnet_FOUND 1)
-    configure_file(${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs.in ${CMAKE_BINARY_DIR}/generated/TestTree.cs)
-    configure_file(${CMAKE_SOURCE_DIR}/tests/dotnet/TestShape.cs.in ${CMAKE_BINARY_DIR}/generated/TestShape.cs)
     configure_file(${CMAKE_SOURCE_DIR}/tests/dotnet/ffig.net.csproj.in ${CMAKE_BINARY_DIR}/generated/ffig.net.csproj)
   endif()
 endif()
@@ -102,19 +100,21 @@ ffig_add_library(NAME Tree INPUTS tests/input/Tree.h NOEXCEPT PYTHON CPP D SWIFT
 ffig_add_library(NAME Asset INPUTS tests/input/Asset.h PYTHON LUA)
 ffig_add_library(NAME Animal INPUTS tests/input/Animal.h PYTHON)
 
-# build dotnet test dll
-# FIXME: Work out how to get dependencies calculated more robustly
 if(dotnet_FOUND)
-  set(DOTNET_FFIG_OUTPUTS ${CMAKE_BINARY_DIR}/generated/Shape.cs;${CMAKE_BINARY_DIR}/generated/Tree.cs)
-  file(GLOB DOTNET_TEST_INPUTS ${CMAKE_SOURCE_DIR}/tests/dotnet/*)
-
-  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/generated/ffig.net.dll
-    COMMAND dotnet build ffig.net.csproj -o .
-    DEPENDS ${DOTNET_TEST_INPUTS};${DOTNET_FFIG_OUTPUTS}
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/generated
-    COMMENT "Building DOTNET assembly ffig.net.dll")
-  add_custom_target(ffig.net ALL
-    DEPENDS ${CMAKE_BINARY_DIR}/generated/ffig.net.dll)
+  include(dotnet)
+  add_dotnet_library(NAME ffig.net 
+    DIRECTORY ${CMAKE_BINARY_DIR}/generated
+    SOURCES 
+      ${CMAKE_SOURCE_DIR}/tests/dotnet/TestShape.cs 
+      ${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs 
+      ${CMAKE_BINARY_DIR}/generated/Tree.cs 
+      ${CMAKE_BINARY_DIR}/generated/Tree.cs 
+      ${CMAKE_BINARY_DIR}/generated/Shape.cs
+    )
+  add_custom_command(TARGET ffig.net
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/dotnet.output/ffig.net/* ${CMAKE_BINARY_DIR}/generated/
+    COMMENT "Moving assemblies for ffig.net to ${CMAKE_BINARY_DIR}/generated/")
 endif()
 
 add_subdirectory(tests/src)
