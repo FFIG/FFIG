@@ -8,21 +8,23 @@ function(add_dotnet_library)
   set(SOURCES ${add_dotnet_library_SOURCES})
 
   # FIXME: make this customizable
-  set(_DOTNET_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/dotnet.output)
+  set(_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dotnet.output)
   set(DOTNET_OUTPUT_DIRECTORY ${_DOTNET_OUTPUT_DIRECTORY}/${NAME})
   file(MAKE_DIRECTORY ${DOTNET_OUTPUT_DIRECTORY})
   
   # FIXME: make this customizable
   # FIXME: avoid the need to copy source to a special location by redirecting obj output
-  set(_DOTNET_INTERMEDIATE_DIRECTORY ${CMAKE_BINARY_DIR}/dotnet.intermediate)
+  set(_DOTNET_INTERMEDIATE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dotnet.intermediate)
   set(DOTNET_INTERMEDIATE_DIRECTORY ${_DOTNET_INTERMEDIATE_DIRECTORY}/${NAME})
   file(MAKE_DIRECTORY ${DOTNET_INTERMEDIATE_DIRECTORY})
 
   set(OUTPUT ${DOTNET_OUTPUT_DIRECTORY}/${NAME}.dll)
   set(CSPROJ ${NAME}.csproj)
 
-  set(DEPENDENCIES ${SOURCES})
-  list(APPEND DEPENDENCIES ${DIRECTORY}/${CSPROJ})
+  set(DEPENDENCIES
+    ${SOURCES}
+    ${DIRECTORY}/${CSPROJ}
+  )
 
   add_custom_command(OUTPUT ${OUTPUT} 
     COMMAND ${CMAKE_COMMAND} -E copy
@@ -31,7 +33,7 @@ function(add_dotnet_library)
     COMMAND ${CMAKE_COMMAND} -E copy
       ${SOURCES}
       ${DOTNET_INTERMEDIATE_DIRECTORY}
-      COMMAND dotnet build ${CSPROJ} -o ${DOTNET_OUTPUT_DIRECTORY}
+    COMMAND dotnet build ${CSPROJ} -o ${DOTNET_OUTPUT_DIRECTORY}
     DEPENDS ${DEPENDENCIES}
     WORKING_DIRECTORY ${DOTNET_INTERMEDIATE_DIRECTORY}
     COMMENT "Building DOTNET assembly ${NAME}.dll"
