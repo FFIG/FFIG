@@ -77,8 +77,6 @@ if(result)
   message(STATUS "Dotnet tests disabled: dotnet executable not found.")
 else()
   set(dotnet_FOUND 1)
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestTree.cs.in ${CMAKE_CURRENT_BINARY_DIR}/generated/TestTree.cs)
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape.cs.in ${CMAKE_CURRENT_BINARY_DIR}/generated/TestShape.cs)
   configure_file(${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/ffig.net.csproj.in ${CMAKE_CURRENT_BINARY_DIR}/generated/ffig.net.csproj)
 endif()
 
