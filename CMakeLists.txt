@@ -1,7 +1,6 @@
 # FIXME: Work out which CMake version we actually need.
 cmake_minimum_required(VERSION 3.5)
 
-# FIXME: This silences a warning but I'm not sure why its needed.
 set(CMAKE_MACOSX_RPATH 1)
 
 project(test_ffig)
@@ -153,7 +152,8 @@ add_subdirectory(tests/src)
 
 enable_testing()
 
-# FIXME: Run custom clang tests until we can use LLVM's clang.cindex.
+# FIXME: Run custom clang tests until clang 5 is commonly available.
+# clang 5 has our changes to cindex.py that enable Python3 support.
 
 add_test(
   NAME test_cppmodel
