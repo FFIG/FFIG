@@ -145,6 +145,7 @@ ffig_add_library(NAME Animal
 
 if(dotnet_FOUND)
   include(dotnet)
+  set(DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
   add_dotnet_library(NAME ffig.net 
     DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
     SOURCES 
@@ -154,10 +155,6 @@ if(dotnet_FOUND)
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
     )
-  add_custom_command(TARGET ffig.net
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/dotnet.output/ffig.net/* ${CMAKE_CURRENT_BINARY_DIR}/generated/
-    COMMENT "Moving assemblies for ffig.net to ${CMAKE_CURRENT_BINARY_DIR}/generated/")
 endif()
 
 add_subdirectory(tests/src)

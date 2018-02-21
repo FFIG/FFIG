@@ -7,9 +7,10 @@ function(add_dotnet_library)
   set(DIRECTORY ${add_dotnet_library_DIRECTORY})
   set(SOURCES ${add_dotnet_library_SOURCES})
 
-  # FIXME: make this customizable
-  set(_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dotnet.output)
-  set(DOTNET_OUTPUT_DIRECTORY ${_DOTNET_OUTPUT_DIRECTORY}/${NAME})
+  if(NOT DOTNET_OUTPUT_DIRECTORY)
+    set(_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dotnet.output)
+    set(DOTNET_OUTPUT_DIRECTORY ${_DOTNET_OUTPUT_DIRECTORY}/${NAME})
+  endif() 
   file(MAKE_DIRECTORY ${DOTNET_OUTPUT_DIRECTORY})
   
   # FIXME: make this customizable
