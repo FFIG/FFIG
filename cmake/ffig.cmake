@@ -29,7 +29,7 @@
 # * CPP_MOCKS - creates myModuleName_mocks.h
 
 function(ffig_add_library)
-  set(options RUBY PYTHON CPP CPP_MOCKS GO LUA DOTNET D SWIFT NOEXCEPT)
+  set(options RUBY PYTHON CPP CPP_MOCKS GO LUA DOTNET D SWIFT JAVA NOEXCEPT)
   set(oneValueArgs NAME INPUTS)
   cmake_parse_arguments(ffig_add_library "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -80,6 +80,10 @@ function(ffig_add_library)
     set(ffig_invocation "${ffig_invocation};swift.tmpl")
     set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/${module}.swift")
   endif()
+  if(ffig_add_library_JAVA)
+    set(ffig_invocation "${ffig_invocation};java.tmpl")
+    set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/${module}.java")
+  endif()
   # NOEXCEPT must come after all the language bindings as it add another flag.
   if(ffig_add_library_NOEXCEPT)
     set(ffig_invocation "${ffig_invocation};--noexcept")
@@ -107,7 +111,7 @@ function(ffig_add_library)
       # type or function names supplied as input.
       add_custom_command(TARGET ${module}_c
           POST_BUILD
-          COMMAND python -m pycodestyle --ignore=E501 ${ffig_output_dir}/${module_lower}
+          COMMAND ${PYTHON_EXECUTABLE} -m pycodestyle --ignore=E501 ${ffig_output_dir}/${module_lower}
           DEPENDS ${ffig_outputs})
   endif()
 endfunction()
