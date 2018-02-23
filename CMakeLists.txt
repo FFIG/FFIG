@@ -282,6 +282,8 @@ if(Java_FOUND)
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
   set_property(TEST test_java_asset 
     PROPERTY LABELS JAVA)
+  set_property(TEST test_java_asset 
+                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
 add_test(
