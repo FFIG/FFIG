@@ -10,7 +10,6 @@ install:
 # scripts to run before build (We use this to build and run tests)
 before_build:
   - cd c:\projects\ffig
-  - python scripts\download_jars.py
   
 build_script:
   - python scripts\build.py -t --python-path "C:\\Python36-x64\\python"

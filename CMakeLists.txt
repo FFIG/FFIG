@@ -241,22 +241,27 @@ if(Java_FOUND)
   set_property(TEST test_java_shape_output 
                 PROPERTY LABELS JAVA TEXT)
 
-  find_jar(JNA_JAR NAMES jna jna-4.5.1 
-           PATHS ${CMAKE_CURRENT_SOURCE_DIR}/build/jars)
+  set(FFIG_JAR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/externals/ffig-jars)
+
+  find_jar(JNA_JAR NAMES jna jna-4.5.1 PATHS ${FFIG_JAR_PATH})
   if(NOT JNA_JAR)
-    message(FATAL_ERROR "Could NOT find JNA library.")
+    message(FATAL_ERROR 
+      "Could NOT find JNA library. "
+      "Run git submodules update --init to get JARs")
   endif()
   
-  find_jar(JUNIT_JAR NAMES junit junit-4.12 
-           PATHS ${CMAKE_CURRENT_SOURCE_DIR}/build/jars)
+  find_jar(JUNIT_JAR NAMES junit junit-4.12 PATHS ${FFIG_JAR_PATH})
   if(NOT JUNIT_JAR)
-    message(FATAL_ERROR "Could NOT find JUnit library.")
+    message(FATAL_ERROR 
+      "Could NOT find JUnit library. "
+      "Run git submodules update --init to get JARs")
   endif()
   
-  find_jar(HAMCREST_JAR NAMES hamcrest hamcrest-all-1.3 
-           PATHS ${CMAKE_CURRENT_SOURCE_DIR}/build/jars)
+  find_jar(HAMCREST_JAR NAMES hamcrest hamcrest-all-1.3 PATHS ${FFIG_JAR_PATH})
   if(NOT HAMCREST_JAR)
-    message(FATAL_ERROR "Could NOT find Hamcrest library.")
+    message(FATAL_ERROR 
+      "Could NOT find Hamcrest library. "
+      "Run git submodules update --init to get JARs")
   endif()
 
   add_jar(Asset 
