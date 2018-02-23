@@ -241,17 +241,20 @@ if(Java_FOUND)
   set_property(TEST test_java_shape_output 
                 PROPERTY LABELS JAVA TEXT)
 
-  find_jar(JNA_JAR NAMES jna jna-4.5.1 PATHS ${CMAKE_CURRENT_SOURCE_DIR}/jars)
+  find_jar(JNA_JAR NAMES jna jna-4.5.1 
+           PATHS ${CMAKE_CURRENT_SOURCE_DIR}/build/jars)
   if(NOT JNA_JAR)
     message(FATAL_ERROR "Could NOT find JNA library.")
   endif()
   
-  find_jar(JUNIT_JAR NAMES junit junit-4.12 PATHS ${CMAKE_CURRENT_SOURCE_DIR}/jars)
+  find_jar(JUNIT_JAR NAMES junit junit-4.12 
+           PATHS ${CMAKE_CURRENT_SOURCE_DIR}/build/jars)
   if(NOT JUNIT_JAR)
     message(FATAL_ERROR "Could NOT find JUnit library.")
   endif()
   
-  find_jar(HAMCREST_JAR NAMES hamcrest hamcrest-all-1.3 PATHS ${CMAKE_CURRENT_SOURCE_DIR}/jars)
+  find_jar(HAMCREST_JAR NAMES hamcrest hamcrest-all-1.3 
+           PATHS ${CMAKE_CURRENT_SOURCE_DIR}/build/jars)
   if(NOT HAMCREST_JAR)
     message(FATAL_ERROR "Could NOT find Hamcrest library.")
   endif()
