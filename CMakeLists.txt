@@ -82,6 +82,7 @@ find_package(Java COMPONENTS Development)
 if(NOT Java_FOUND)
   message(STATUS "Java tests disabled: Java SDK not found.")
 else()
+  include(UseJava)
   list(APPEND all_ffig_bindings "JAVA")
 endif()
 
@@ -137,29 +138,15 @@ ffig_add_library(NAME Tree
 ffig_add_library(NAME Asset 
                  INPUTS tests/input/Asset.h 
                  LUA
-                 PYTHON)
+                 PYTHON
+                 JAVA)
 
 ffig_add_library(NAME Animal 
                  INPUTS tests/input/Animal.h 
                  PYTHON)
 
-if(dotnet_FOUND)
-  include(dotnet)
-  set(DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-  add_dotnet_library(NAME ffig.net 
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
-    SOURCES 
-      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape.cs 
-      ${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
-    )
-endif()
-
-add_subdirectory(tests/src)
-
 enable_testing()
+add_subdirectory(tests/src)
 
 # FIXME: Run custom clang tests until clang 5 is commonly available.
 # clang 5 has our changes to cindex.py that enable Python3 support.
@@ -206,6 +193,89 @@ add_test(
 set_property(TEST test_cpp_tree 
              PROPERTY LABELS CPP)
 
+if(dotnet_FOUND)
+  include(dotnet)
+  set(DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  add_dotnet_library(NAME ffig.net 
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    SOURCES 
+      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape.cs 
+      ${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
+  )
+
+  add_test(
+    NAME test_dotnet_shape_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
+    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Shape.cs.expected
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs)
+  set_property(TEST test_dotnet_shape_output 
+                PROPERTY LABELS DOTNET TEXT)
+
+  add_test(
+    NAME test_dotnet_tree_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
+    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree.cs.expected
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs)
+  set_property(TEST test_dotnet_tree_output 
+                PROPERTY LABELS DOTNET TEXT)
+
+  add_test(
+    NAME test_dotnet
+    COMMAND dotnet test --no-build --no-restore -o .
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set_property(TEST test_dotnet 
+                PROPERTY LABELS DOTNET)
+  set_property(TEST test_dotnet 
+                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+endif()
+
+if(Java_FOUND)
+  add_test(
+    NAME test_java_shape_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
+    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Shape.java.expected
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.java)
+  set_property(TEST test_java_shape_output 
+                PROPERTY LABELS JAVA TEXT)
+
+  find_jar(JNA_JAR NAMES jna jna-4.5.1 PATHS ${CMAKE_CURRENT_SOURCE_DIR}/jars)
+  if(NOT JNA_JAR)
+    message(FATAL_ERROR "Could NOT find JNA library.")
+  endif()
+  
+  find_jar(JUNIT_JAR NAMES junit junit-4.12 PATHS ${CMAKE_CURRENT_SOURCE_DIR}/jars)
+  if(NOT JUNIT_JAR)
+    message(FATAL_ERROR "Could NOT find JUnit library.")
+  endif()
+  
+  find_jar(HAMCREST_JAR NAMES hamcrest hamcrest-all-1.3 PATHS ${CMAKE_CURRENT_SOURCE_DIR}/jars)
+  if(NOT HAMCREST_JAR)
+    message(FATAL_ERROR "Could NOT find Hamcrest library.")
+  endif()
+
+  add_jar(Asset 
+          ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.java 
+          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+          INCLUDE_JARS ${JNA_JAR})
+
+  add_jar(TestAsset 
+          tests/java/TestAsset.java 
+          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+          INCLUDE_JARS ${JNA_JAR} ${JUNIT_JAR})
+          
+  add_test(
+    NAME test_java_asset
+    COMMAND ${Java_JAVA_EXECUTABLE} 
+      -classpath ${JNA_JAR}:${JUNIT_JAR}:${HAMCREST_JAR}:${CMAKE_CURRENT_BINARY_DIR}/generated/TestAsset.jar 
+      org.junit.runner.JUnitCore TestAsset
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set_property(TEST test_java_asset 
+    PROPERTY LABELS JAVA)
+endif()
+
 add_test(
   NAME test_d_tree_output
   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
@@ -222,42 +292,6 @@ add_test(
 set_property(TEST test_swift_tree_output 
              PROPERTY LABELS SWIFT TEXT)
              
-if(java_FOUND)
-  add_test(
-    NAME test_java_shape_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Shape.java.expected
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.java)
-  set_property(TEST test_java_shape_output 
-                PROPERTY LABELS JAVA TEXT)
-endif()
-
-if(dotnet_FOUND)
-  add_test(
-    NAME test_dotnet_shape_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Shape.cs.expected
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs)
-  set_property(TEST test_dotnet_shape_output 
-               PROPERTY LABELS DOTNET TEXT)
-
-  add_test(
-    NAME test_dotnet_tree_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree.cs.expected
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs)
-  set_property(TEST test_dotnet_tree_output 
-               PROPERTY LABELS DOTNET TEXT)
-
-  add_test(
-    NAME test_dotnet
-    COMMAND dotnet test --no-build --no-restore -o .
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-  set_property(TEST test_dotnet 
-               PROPERTY LABELS DOTNET)
-  set_property(TEST test_dotnet 
-               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
-endif()
 
 if(LuaJIT_FOUND)
   # FIXME: The relative paths here (and in the lua test file) are very brittle.
@@ -282,4 +316,3 @@ endif()
 if(Go_FOUND AND NOT WIN32)
   add_subdirectory(tests/go)
 endif()
-
