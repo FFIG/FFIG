@@ -145,6 +145,22 @@ ffig_add_library(NAME Animal
                  INPUTS tests/input/Animal.h 
                  PYTHON)
 
+if(dotnet_FOUND)
+  include(dotnet)
+  set(CMAKE_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  add_dotnet_library(NAME ffig.net 
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    SOURCES 
+      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape.cs 
+      ${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
+    )
+endif()
+
+add_subdirectory(tests/src)
+
 enable_testing()
 add_subdirectory(tests/src)
 
