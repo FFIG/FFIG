@@ -83,7 +83,7 @@ if(NOT Java_FOUND)
   message(STATUS "Java tests disabled: Java SDK not found.")
 else()
   include(UseJava)
-  list(APPEND all_ffig_bindings "JAVA")
+  # FIXME: append JAVA to all_ffig_bindings once we have a test.
 endif()
 
 # Look for Lua
@@ -233,14 +233,6 @@ if(dotnet_FOUND)
 endif()
 
 if(Java_FOUND)
-  add_test(
-    NAME test_java_shape_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Shape.java.expected
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.java)
-  set_property(TEST test_java_shape_output 
-                PROPERTY LABELS JAVA TEXT)
-
   set(FFIG_JAR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/externals/ffig-jars)
 
   find_jar(JNA_JAR NAMES jna jna-4.5.1 PATHS ${FFIG_JAR_PATH})
@@ -264,6 +256,7 @@ if(Java_FOUND)
       "Run git submodules update --init to get JARs")
   endif()
 
+  # FIXME: Move JAR creation to ffig.cmake - requires passing JAR_PATH.
   add_jar(Asset 
           ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.java 
           OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
