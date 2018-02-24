@@ -266,11 +266,17 @@ if(Java_FOUND)
           tests/java/TestAsset.java 
           OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
           INCLUDE_JARS ${JNA_JAR} ${JUNIT_JAR})
-          
+
+  if(WIN32)
+    set(SEPARATOR ";")
+  else()
+    set(SEPARATOR ":")
+  endif()
+
   add_test(
     NAME test_java_asset
-    COMMAND ${Java_JAVA_EXECUTABLE} 
-      -classpath ${JNA_JAR}:${JUNIT_JAR}:${HAMCREST_JAR}:${CMAKE_CURRENT_BINARY_DIR}/generated/TestAsset.jar 
+    COMMAND echo ${Java_JAVA_EXECUTABLE} 
+      -classpath ${JNA_JAR}${SEPARATOR}${JUNIT_JAR}${SEPARATOR}${HAMCREST_JAR}${SEPARATOR}${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.jar${SEPARATOR}${CMAKE_CURRENT_BINARY_DIR}/generated/TestAsset.jar 
       org.junit.runner.JUnitCore TestAsset
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
   set_property(TEST test_java_asset 
