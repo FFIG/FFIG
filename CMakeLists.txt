@@ -265,7 +265,10 @@ if(Java_FOUND)
   add_jar(TestAsset 
           tests/java/TestAsset.java 
           OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-          INCLUDE_JARS ${JNA_JAR} ${JUNIT_JAR})
+          INCLUDE_JARS 
+            ${JNA_JAR} 
+            ${JUNIT_JAR} 
+            ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.jar)
 
   if(WIN32)
     set(SEPARATOR ";")
