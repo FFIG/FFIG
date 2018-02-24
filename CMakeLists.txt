@@ -145,22 +145,6 @@ ffig_add_library(NAME Animal
                  INPUTS tests/input/Animal.h 
                  PYTHON)
 
-if(dotnet_FOUND)
-  include(dotnet)
-  set(CMAKE_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-  add_dotnet_library(NAME ffig.net 
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
-    SOURCES 
-      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape.cs 
-      ${CMAKE_SOURCE_DIR}/tests/dotnet/TestTree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
-    )
-endif()
-
-add_subdirectory(tests/src)
-
 enable_testing()
 add_subdirectory(tests/src)
 
@@ -211,7 +195,7 @@ set_property(TEST test_cpp_tree
 
 if(dotnet_FOUND)
   include(dotnet)
-  set(DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set(CMAKE_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
   add_dotnet_library(NAME ffig.net 
     DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
     SOURCES 
@@ -228,7 +212,7 @@ if(dotnet_FOUND)
     ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Shape.cs.expected
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs)
   set_property(TEST test_dotnet_shape_output 
-                PROPERTY LABELS DOTNET TEXT)
+               PROPERTY LABELS DOTNET TEXT)
 
   add_test(
     NAME test_dotnet_tree_output
@@ -236,16 +220,16 @@ if(dotnet_FOUND)
     ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree.cs.expected
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs)
   set_property(TEST test_dotnet_tree_output 
-                PROPERTY LABELS DOTNET TEXT)
+               PROPERTY LABELS DOTNET TEXT)
 
   add_test(
     NAME test_dotnet
     COMMAND dotnet test --no-build --no-restore -o .
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
   set_property(TEST test_dotnet 
-                PROPERTY LABELS DOTNET)
+               PROPERTY LABELS DOTNET)
   set_property(TEST test_dotnet 
-                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
 if(Java_FOUND)
