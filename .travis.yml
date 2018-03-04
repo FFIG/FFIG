@@ -28,8 +28,8 @@ matrix:
         - brew update
         - brew install ninja && brew upgrade python && brew install python@2
         - brew cask install caskroom/cask/dotnet
-        - export PATH="/usr/local/opt/python@2/libexec/bin:$PATH"
-        - pip2 install --user --upgrade pip && pip2 install --user jinja2 nose pycodestyle
+        - PATH="/usr/local/opt/python@2/libexec/bin:$PATH" pip2 install --user --upgrade pip
+        - PATH="/usr/local/opt/python@2/libexec/bin:$PATH" pip2 install --user jinja2 nose pycodestyle
         - pip3 install --user --upgrade pip && pip3 install --user jinja2 nose pycodestyle
         - gem install ffi
       script:
