@@ -25,8 +25,8 @@ matrix:
       language: generic
       osx_image: xcode9.2
       install:
-        - brew update && brew postinstall python@2
-        - brew install ninja python3
+        - brew update
+        - brew install ninja python@2 python3
         - brew cask install caskroom/cask/dotnet
         - pip2 install --user --upgrade pip && pip2 install --user jinja2 nose pycodestyle
         - pip3 install --user --upgrade pip && pip3 install --user jinja2 nose pycodestyle
