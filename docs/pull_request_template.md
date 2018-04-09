@@ -1,7 +1,13 @@
-#### What does this PR do?
+# Required
 
-#### Where should the reviewer start?
+## What does this PR do? 
 
-#### Ideas that were considered and discarded
+## Closes [github issues]
 
-#### Relevant tickets
+# Optional 
+
+## Where should the reviewer start?
+
+## Ideas that were considered and discarded
+
+## Possible future work
