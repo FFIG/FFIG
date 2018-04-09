@@ -75,7 +75,16 @@ class {{class.name}}:
     @property
     {% endif %}
     def {{method.name}}(self{{py3_macros.method_parameters(method, leading_comma=True)}}) -> '{{method.return_type|to_hint_type}}':
-  {% if not method.is_noexcept %}
+  {% if method.is_noexcept %}
+    {% if method.returns_void %}
+        conf.lib.{{module.name}}_{{class.name}}_{{method.name}}_noexcept(self{{py3_macros.method_arguments(method, leading_comma=True)}})
+    {% elif method.returns_sub_object or method.returns_object_by_value %}
+        rv = conf.lib.{{module.name}}_{{class.name}}_{{method.name}}_noexcept(self{{py3_macros.method_arguments(method, leading_comma=True)}})
+        return {{method.return_type|to_py3_ctype}}.from_capi(rv)
+    {% else %}
+        return conf.lib.{{module.name}}_{{class.name}}_{{method.name}}_noexcept(self{{py3_macros.method_arguments(method, leading_comma=True)}})
+    {% endif %} 
+  {%- else -%}
     {% if method.returns_void %}
         rc = conf.lib.{{module.name}}_{{class.name}}_{{method.name}}(self{{py3_macros.method_arguments(method, leading_comma=True)}})
         if rc != 0:
@@ -93,15 +102,6 @@ class {{class.name}}:
             return rv.value
         raise {{module.name}}_error()
     {% endif -%} 
-  {% else %}
-    {% if method.returns_void %}
-        conf.lib.{{module.name}}_{{class.name}}_{{method.name}}_noexcept(self{{py3_macros.method_arguments(method, leading_comma=True)}})
-    {% elif method.returns_sub_object or method.returns_object_by_value %}
-        rv = conf.lib.{{module.name}}_{{class.name}}_{{method.name}}_noexcept(self{{py3_macros.method_arguments(method, leading_comma=True)}})
-        return {{method.return_type|to_py3_ctype}}.from_capi(rv)
-    {% else %}
-        return conf.lib.{{module.name}}_{{class.name}}_{{method.name}}_noexcept(self{{py3_macros.method_arguments(method, leading_comma=True)}})
-    {% endif %} 
   {%- endif -%}
 {% endfor %}
 
