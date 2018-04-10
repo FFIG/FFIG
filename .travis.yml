@@ -16,9 +16,9 @@ matrix:
         - pip install autopep8
       script:
         - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python2 --venv"
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python2 --venv" --cap-add SYS_PTRACE
+        - docker run --cap-add SYS_PTRACE ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python2 --venv"
         - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python3 --venv"
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python3 --venv" --cap-add SYS_PTRACE
+        - docker run --cap-add SYS_PTRACE ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python3 --venv"
         - ./scripts/codechecks.py
 
     - os: osx
