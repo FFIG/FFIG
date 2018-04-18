@@ -321,6 +321,14 @@ add_test(
   ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
 set_property(TEST test_swift_tree_output 
              PROPERTY LABELS SWIFT TEXT)
+
+add_test(
+  NAME test_swift_tree_h_output
+  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
+  ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree-Bridging-Header.h.expected
+  ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h)
+set_property(TEST test_swift_tree_h_output 
+             PROPERTY LABELS SWIFT TEXT)
              
 
 if(LuaJIT_FOUND)
