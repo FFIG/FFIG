@@ -67,6 +67,19 @@ else()
   list(APPEND all_ffig_bindings "GO")
 endif()
 
+# Look for Swift
+execute_process(COMMAND swiftc --version
+                RESULT_VARIABLE result
+                OUTPUT_QUIET
+                ERROR_QUIET)
+if(result)
+  set(Swift_FOUND FALSE)
+else()
+  set(Swift_FOUND True)
+  list(APPEND all_ffig_bindings "SWIFT")
+endif()
+
+
 # Look for Ruby
 find_package(Ruby)
 if(NOT Ruby_FOUND)
@@ -314,22 +327,23 @@ add_test(
 set_property(TEST test_d_tree_output 
              PROPERTY LABELS D TEXT)
 
-add_test(
-  NAME test_swift_tree_output
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-  ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree.swift.expected
-  ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
-set_property(TEST test_swift_tree_output 
-             PROPERTY LABELS SWIFT TEXT)
+if(Swift_FOUND)
+  add_test(
+    NAME test_swift_tree_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
+    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree.swift.expected
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
+  set_property(TEST test_swift_tree_output
+               PROPERTY LABELS SWIFT TEXT)
 
-add_test(
-  NAME test_swift_tree_h_output
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-  ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree-Bridging-Header.h.expected
-  ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h)
-set_property(TEST test_swift_tree_h_output 
-             PROPERTY LABELS SWIFT TEXT)
-             
+  add_test(
+    NAME test_swift_tree_h_output
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
+    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree-Bridging-Header.h.expected
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h)
+  set_property(TEST test_swift_tree_h_output
+               PROPERTY LABELS SWIFT TEXT)
+endif()
 
 if(LuaJIT_FOUND)
   # FIXME: The relative paths here (and in the lua test file) are very brittle.
