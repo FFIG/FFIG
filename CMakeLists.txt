@@ -256,6 +256,21 @@ if(dotnet_FOUND)
                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
+if(Swift_FOUND)                                                             
+  set(SWIFT_TREE_BINARY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree)
+  
+  add_custom_command(
+    OUTPUT ${SWIFT_TREE_BINARY}
+    COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift 
+      -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
+      -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
+      -o ${SWIFT_TREE_BINARY}
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
+  
+  add_custom_target(SwiftTree ALL DEPENDS ${SWIFT_TREE_BINARY})
+endif()
+
 if(Java_FOUND)
   set(FFIG_JAR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/externals/ffig-jars)
 

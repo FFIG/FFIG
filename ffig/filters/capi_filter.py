@@ -520,3 +520,12 @@ def to_java_return_value(t, rv):
     raise Exception(
         'Type {} has no defined java return value translation (adding one may be trivial)'.format(
             t.name))
+
+def to_swift_param(arg):
+    return "{}:{}".format(arg.name, "CInt")
+
+def to_swift_arg(arg):
+    return arg.name
+
+def to_swift_return_type(t):
+    return "CInt"
