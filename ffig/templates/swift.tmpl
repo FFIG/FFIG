@@ -28,18 +28,30 @@ class {{class.name}} {
   }
 
 {% for method in class.methods %}
-  func {{method.name}}({{swift_macros.method_parameters(method)}}) {% if not method.is_noexcept %}throws{% endif %} {% if not method.returns_void %}-> {{method.return_type|to_swift_return_type}}{% endif %}
+  func {{method.name}}({{swift_macros.method_parameters(method)}}) {% if not method.is_noexcept %}throws {% endif %}{% if not method.returns_void %}-> {{method.return_type|to_swift_return_type}}{% endif %}
   {
     {% if method.is_noexcept %}
-    {% if not method.returns_void %}let rv = {% endif %}{{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
+    {% if method.returns_void %}
+    {{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
+    {% else %}
+    let rv = {{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
+    return rv
+    {% endif %}
+    {% else %}
+    {% if method.returns_void %}
+    int rc = {{module.name}}_{{class.name}}_{{method.name}}(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
+    if rc != 0 {
+      throw {{module.name}}Error() 
+    }
     {% else %}
     var rv
     int rc = {{module.name}}_{{class.name}}_{{method.name}}(obj_{{swift_macros.method_arguments(method, leading_comma=True), rv}})
     if rc != 0 {
       throw {{module.name}}Error() 
     }
+    return rv
     {% endif %}
-    {% if not method.returns_void %}return rv{% endif %}
+    {% endif %}
   }
 
 {% endfor %}
