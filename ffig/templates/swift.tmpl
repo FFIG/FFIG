@@ -35,21 +35,21 @@ class {{class.name}} {
     {{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
     {% else %}
     let rv = {{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
-    return rv
+    return {{method.return_type|to_swift_return_value("rv")}};
     {% endif %}
     {% else %}
     {% if method.returns_void %}
     int rc = {{module.name}}_{{class.name}}_{{method.name}}(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
     if rc != 0 {
-      throw {{module.name}}Error() 
+      throw {{module.name}}Error()
     }
     {% else %}
     var rv
     int rc = {{module.name}}_{{class.name}}_{{method.name}}(obj_{{swift_macros.method_arguments(method, leading_comma=True), rv}})
     if rc != 0 {
-      throw {{module.name}}Error() 
+      throw {{module.name}}Error()
     }
-    return rv
+    return {{method.return_type|to_swift_return_value("rv")}};
     {% endif %}
     {% endif %}
   }

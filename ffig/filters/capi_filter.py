@@ -529,3 +529,6 @@ def to_swift_arg(arg):
 
 def to_swift_return_type(t):
     return "CInt"
+
+def to_swift_return_value(t, rv):
+    return "rv"
