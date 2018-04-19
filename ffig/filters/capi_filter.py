@@ -523,11 +523,33 @@ def to_java_return_value(t, rv):
 
 
 def to_swift_param(arg):
-    return "{}:{}".format(arg.name, "CInt")
+    t = arg.type
+    a = arg.name
+    if t.kind == TypeKind.DOUBLE:
+        return "{}:Double".format(a)
+    if t.kind == TypeKind.INT:
+        return "{}:Int32".format(a)
+    if t.kind == TypeKind.POINTER:
+        if t.pointee.kind == TypeKind.CHAR_S:
+            return "{}:String".format(a)
+        if t.pointee.kind == TypeKind.RECORD:
+            return a + ":" + t.pointee.name.replace('const ', '')
+    raise Exception(
+        'Type {} has no defined Swift parameter translation (adding one may be trivial)'.format(t.name))
 
 
 def to_swift_arg(arg):
-    return arg.name
+    t = arg.type
+    a = arg.name
+    if t.kind == TypeKind.DOUBLE:
+        return a
+    if t.kind == TypeKind.INT:
+        return a
+    if t.kind == TypeKind.POINTER:
+        if t.pointee.kind == TypeKind.RECORD:
+            return "{}.obj_".format(a)
+    raise Exception(
+        'Type {} has no defined Swift arg translation (adding one may be trivial)'.format(t.name))
 
 
 def to_swift_return_type(t):
@@ -551,7 +573,7 @@ def to_swift_return_value(t, rv):
         return rv
     if t.kind == TypeKind.POINTER:
         if t.pointee.kind == TypeKind.CHAR_S:
-            return "String(cString:rv)"
+            return "String(cString:rv!)"
         if t.pointee.kind == TypeKind.RECORD:
             return t.pointee.name.replace('const ', '') + "(obj: rv!)"
     raise Exception(

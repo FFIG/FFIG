@@ -62,6 +62,7 @@ execute_process(COMMAND go version
                 ERROR_QUIET)
 if(result)
   set(Go_FOUND FALSE)
+  message(STATUS "Go tests disabled: Go compiler not found.")
 else()
   set(Go_FOUND True)
   list(APPEND all_ffig_bindings "GO")
@@ -74,6 +75,7 @@ execute_process(COMMAND swiftc --version
                 ERROR_QUIET)
 if(result)
   set(Swift_FOUND FALSE)
+  message(STATUS "Swift tests disabled: Swift compiler not found.")
 else()
   set(Swift_FOUND True)
   list(APPEND all_ffig_bindings "SWIFT")
@@ -257,19 +259,33 @@ if(dotnet_FOUND)
 endif()
 
 if(Swift_FOUND)                                                             
-  set(SWIFT_TREE_BINARY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree)
   
+  set(SWIFT_SHAPE_BINARY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape)
+  add_custom_command(
+    OUTPUT ${SWIFT_SHAPE_BINARY}
+    COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift
+      -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
+      -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
+      -L${CMAKE_CURRENT_BINARY_DIR}/generated/
+      -lShape_c
+      -o ${SWIFT_SHAPE_BINARY}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift)
+  add_custom_target(SwiftShape ALL DEPENDS ${SWIFT_SHAPE_BINARY})
+ 
+  set(SWIFT_TREE_BINARY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree)
   add_custom_command(
     OUTPUT ${SWIFT_TREE_BINARY}
-    COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift 
+    COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift
       -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
       -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
       -L${CMAKE_CURRENT_BINARY_DIR}/generated/
       -lTree_c
       -o ${SWIFT_TREE_BINARY}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
-  
   add_custom_target(SwiftTree ALL DEPENDS ${SWIFT_TREE_BINARY})
 endif()
 
@@ -343,24 +359,6 @@ add_test(
   ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.d)
 set_property(TEST test_d_tree_output 
              PROPERTY LABELS D TEXT)
-
-if(Swift_FOUND)
-  add_test(
-    NAME test_swift_tree_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree.swift.expected
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
-  set_property(TEST test_swift_tree_output
-               PROPERTY LABELS SWIFT TEXT)
-
-  add_test(
-    NAME test_swift_tree_h_output
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scripts/pydiff.py
-    ${CMAKE_CURRENT_LIST_DIR}/tests/expected_output/Tree-Bridging-Header.h.expected
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h)
-  set_property(TEST test_swift_tree_h_output
-               PROPERTY LABELS SWIFT TEXT)
-endif()
 
 if(LuaJIT_FOUND)
   # FIXME: The relative paths here (and in the lua test file) are very brittle.

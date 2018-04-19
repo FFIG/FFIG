@@ -29,6 +29,7 @@ class {{class.name}} {
 
 {% for method in class.methods %}
   func {{method.name}}({{swift_macros.method_parameters(method)}}) {% if not method.is_noexcept %}throws {% endif %}{% if not method.returns_void %}-> {{method.return_type|to_swift_return_type}}{% endif %}
+  
   {
     {% if method.is_noexcept %}
     {% if method.returns_void %}
