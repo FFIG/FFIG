@@ -264,6 +264,8 @@ if(Swift_FOUND)
     COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift 
       -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
       -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
+      -L${CMAKE_CURRENT_BINARY_DIR}/generated/
+      -lTree_c
       -o ${SWIFT_TREE_BINARY}
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
