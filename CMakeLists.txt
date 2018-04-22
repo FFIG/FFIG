@@ -260,35 +260,43 @@ endif()
 
 if(Swift_FOUND)                                                             
   
-  set(SWIFT_SHAPE_BINARY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape)
+  set(SWIFT_SHAPE_MODULE ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape)
   add_custom_command(
-    OUTPUT ${SWIFT_SHAPE_BINARY}
+    OUTPUT ${SWIFT_SHAPE_MODULE}
     COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift
       -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
       -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
       -L${CMAKE_CURRENT_BINARY_DIR}/generated/
       -lShape_c
-      -o ${SWIFT_SHAPE_BINARY}
+      -emit-module
+      -emit-module-path ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape.swiftmodule
+      -emit-library
+      -module-name Shape
+      -o ${SWIFT_SHAPE_MODULE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
     DEPENDS Shape_c 
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift)
-  add_custom_target(SwiftShape ALL DEPENDS ${SWIFT_SHAPE_BINARY})
+  add_custom_target(SwiftShape ALL DEPENDS ${SWIFT_SHAPE_MODULE})
  
-  set(SWIFT_TREE_BINARY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree)
+  set(SWIFT_TREE_MODULE ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree)
   add_custom_command(
-    OUTPUT ${SWIFT_TREE_BINARY}
+    OUTPUT ${SWIFT_TREE_MODULE}
     COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift
       -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
       -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
       -L${CMAKE_CURRENT_BINARY_DIR}/generated/
       -lTree_c
-      -o ${SWIFT_TREE_BINARY}
+      -emit-module
+      -emit-module-path ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree.swiftmodule
+      -emit-library
+      -module-name Tree
+      -o ${SWIFT_TREE_MODULE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
     DEPENDS Tree_c
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree-Bridging-Header.h 
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
-  add_custom_target(SwiftTree ALL DEPENDS ${SWIFT_TREE_BINARY})
+  add_custom_target(SwiftTree ALL DEPENDS ${SWIFT_TREE_MODULE})
 
 endif()
 

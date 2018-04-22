@@ -526,14 +526,14 @@ def to_swift_param(arg):
     t = arg.type
     a = arg.name
     if t.kind == TypeKind.DOUBLE:
-        return "{}:Double".format(a)
+        return "_ {}:Double".format(a)
     if t.kind == TypeKind.INT:
-        return "{}:Int32".format(a)
+        return "_ {}:Int32".format(a)
     if t.kind == TypeKind.POINTER:
         if t.pointee.kind == TypeKind.CHAR_S:
-            return "{}:String".format(a)
+            return "_ {}:String".format(a)
         if t.pointee.kind == TypeKind.RECORD:
-            return a + ":" + t.pointee.name.replace('const ', '')
+            return "_ " + a + ":" + t.pointee.name.replace('const ', '')
     raise Exception(
         'Type {} has no defined Swift parameter translation (adding one may be trivial)'.format(t.name))
 
@@ -575,6 +575,6 @@ def to_swift_return_value(t, rv):
         if t.pointee.kind == TypeKind.CHAR_S:
             return "String(cString:rv!)"
         if t.pointee.kind == TypeKind.RECORD:
-            return t.pointee.name.replace('const ', '') + "(obj: rv!)"
+            return t.pointee.name.replace('const ', '') + "(fromCPtr: rv!)"
     raise Exception(
         'Type {} has no defined Swift return value translation (adding one may be trivial)'.format(t.name))
