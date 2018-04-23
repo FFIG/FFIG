@@ -23,7 +23,7 @@ public class {{class.name}} {
 
   {% if not class.is_abstract %}
   {% for method in class.constructors %}
-  convenience init({{swift_macros.method_parameters(method)}}) {
+  public convenience init({{swift_macros.method_parameters(method)}}) {
     var rv : OpaquePointer?
     {{module.name}}_{{method.name}}_create({{swift_macros.method_arguments(method,trailing_comma=True)}}&rv)
     //if rc != 0 {
