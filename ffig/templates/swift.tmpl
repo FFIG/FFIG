@@ -40,12 +40,17 @@ public class {{class.name}} {
   }
 
 {% for method in class.methods %}
-  public func {{method.name}}({{swift_macros.method_parameters(method)}}) {% if not method.is_noexcept %}throws {% endif %}{% if not method.returns_void %}-> {{method.return_type|to_swift_return_type}}{% endif %} {
+  public func {{method.name}}({{swift_macros.method_parameters(method)}}) {% if not method.is_noexcept %}throws {% endif %}{% if not method.returns_void %}-> {{method.return_type|to_swift_return_type}}{% if method.returns_nullable %}?{% endif %}{% endif %} {
     {% if method.is_noexcept %}
     {% if method.returns_void %}
     {{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
     {% else %}
     let rv = {{module.name}}_{{class.name}}_{{method.name}}_noexcept(obj_{{swift_macros.method_arguments(method, leading_comma=True)}})
+    {% if method.returns_nullable %}
+    if(rv == nil) {
+      return nil;
+    }
+    {% endif %}
     return {{method.return_type|to_swift_return_value("rv")}};
     {% endif %}
     {% else %}
