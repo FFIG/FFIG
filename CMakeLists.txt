@@ -300,6 +300,48 @@ if(Swift_FOUND)
     PROPERTY LABELS SWIFT)
   set_property(TEST test_swift_tree 
                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+  
+  
+  set(SWIFT_SHAPE_MODULE ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape)
+  add_custom_command(
+    OUTPUT ${SWIFT_SHAPE_MODULE}
+    COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift
+      -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
+      -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
+      -L${CMAKE_CURRENT_BINARY_DIR}/generated/
+      -lShape_c
+      -emit-module
+      -emit-module-path ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape.swiftmodule
+      -emit-library
+      -module-name Shape
+      -o ${SWIFT_SHAPE_MODULE}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    DEPENDS Shape_c
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
+      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift)
+  add_custom_target(SwiftShape ALL DEPENDS ${SWIFT_SHAPE_MODULE})
+
+  set(SWIFT_SHAPE_TEST ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/ShapeTest)
+  add_custom_command(
+    OUTPUT ${SWIFT_SHAPE_TEST}
+    COMMAND swiftc ${CMAKE_CURRENT_LIST_DIR}/tests/swift/TestShape/main.swift
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape
+    -I${CMAKE_CURRENT_BINARY_DIR}/generated/Swift 
+    -L${CMAKE_CURRENT_BINARY_DIR}/generated
+    -lShape_c 
+    -o ${SWIFT_SHAPE_TEST}
+    DEPENDS Shape_c ${SWIFT_SHAPE_MODULE}
+      ${CMAKE_CURRENT_LIST_DIR}/tests/swift/TestShape/main.swift)
+  add_custom_target(SwiftShapeTest ALL DEPENDS ${SWIFT_SHAPE_TEST})
+
+  add_test(
+    NAME test_swift_shape
+    COMMAND ./ShapeTest
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift)
+  set_property(TEST test_swift_shape
+    PROPERTY LABELS SWIFT)
+  set_property(TEST test_swift_shape 
+               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
 if(Java_FOUND)
