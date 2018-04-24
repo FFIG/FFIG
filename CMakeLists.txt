@@ -259,25 +259,6 @@ if(dotnet_FOUND)
 endif()
 
 if(Swift_FOUND)                                                             
-  
-  set(SWIFT_SHAPE_MODULE ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape)
-  add_custom_command(
-    OUTPUT ${SWIFT_SHAPE_MODULE}
-    COMMAND swiftc ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift
-      -import-objc-header ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
-      -Xcc -I${CMAKE_CURRENT_LIST_DIR}/ffig/include/
-      -L${CMAKE_CURRENT_BINARY_DIR}/generated/
-      -lShape_c
-      -emit-module
-      -emit-module-path ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Shape.swiftmodule
-      -emit-library
-      -module-name Shape
-      -o ${SWIFT_SHAPE_MODULE}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
-    DEPENDS Shape_c 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape-Bridging-Header.h 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.swift)
-  add_custom_target(SwiftShape ALL DEPENDS ${SWIFT_SHAPE_MODULE})
  
   set(SWIFT_TREE_MODULE ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree)
   add_custom_command(
@@ -298,6 +279,27 @@ if(Swift_FOUND)
       ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.swift)
   add_custom_target(SwiftTree ALL DEPENDS ${SWIFT_TREE_MODULE})
 
+  set(SWIFT_TREE_TEST ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/TreeTest)
+  add_custom_command(
+    OUTPUT ${SWIFT_TREE_TEST}
+    COMMAND swiftc ${CMAKE_CURRENT_LIST_DIR}/tests/swift/TestTree/main.swift
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift/Tree
+    -I${CMAKE_CURRENT_BINARY_DIR}/generated/Swift 
+    -L${CMAKE_CURRENT_BINARY_DIR}/generated
+    -lTree_c 
+    -o ${SWIFT_TREE_TEST}
+    DEPENDS Tree_c ${SWIFT_TREE_MODULE}
+      ${CMAKE_CURRENT_LIST_DIR}/tests/swift/TestTree/main.swift)
+  add_custom_target(SwiftTreeTest ALL DEPENDS ${SWIFT_TREE_TEST})
+
+  add_test(
+    NAME test_swift_tree
+    COMMAND ./TreeTest
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/Swift)
+  set_property(TEST test_swift_tree
+    PROPERTY LABELS SWIFT)
+  set_property(TEST test_swift_tree 
+               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
 if(Java_FOUND)
