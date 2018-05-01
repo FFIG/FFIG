@@ -134,8 +134,6 @@ if(result)
   message(STATUS "Dotnet tests disabled: dotnet executable not found.")
 else()
   set(dotnet_FOUND 1)
-  configure_file(${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/ffig.net.csproj.in 
-                 ${CMAKE_CURRENT_BINARY_DIR}/generated/ffig.net.csproj)
   list(APPEND all_ffig_bindings "DOTNET")
 endif()
 
@@ -237,25 +235,30 @@ set_property(TEST test_cpp_tree
 if(dotnet_FOUND)
   include(dotnet)
   set(CMAKE_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-  add_dotnet_library(NAME ffig.net 
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+  add_dotnet_project(NAME Shape.net 
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/Shape
     SOURCES 
-      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestNumber.cs 
-      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape.cs 
-      ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestTree.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Number.cs 
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
-      ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs 
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
+  )
+  add_dotnet_project(NAME Tree.net 
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/Tree
+    SOURCES 
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs
+  )
+  add_dotnet_project(NAME Number.net 
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/Number
+    SOURCES 
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/Number.cs
   )
 
-  add_test(
-    NAME test_dotnet
-    COMMAND dotnet test --no-build --no-restore -o .
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-  set_property(TEST test_dotnet 
-               PROPERTY LABELS DOTNET)
-  set_property(TEST test_dotnet 
-               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+#  add_test(
+#    NAME test_dotnet
+#    COMMAND dotnet test --no-build --no-restore -o .
+#    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+#  set_property(TEST test_dotnet 
+#               PROPERTY LABELS DOTNET)
+#  set_property(TEST test_dotnet 
+#               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
 if(Swift_FOUND)                                                             

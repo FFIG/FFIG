@@ -1,11 +1,11 @@
-function(add_dotnet_library)
+function(add_dotnet_project)
   set(oneValueArgs NAME DIRECTORY)
   set(multiValueArgs SOURCES)
-  cmake_parse_arguments(add_dotnet_library "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(add_dotnet_project "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  set(NAME ${add_dotnet_library_NAME})
-  set(DIRECTORY ${add_dotnet_library_DIRECTORY})
-  set(SOURCES ${add_dotnet_library_SOURCES})
+  set(NAME ${add_dotnet_project_NAME})
+  set(DIRECTORY ${add_dotnet_project_DIRECTORY})
+  set(SOURCES ${add_dotnet_project_SOURCES})
 
   if(NOT CMAKE_DOTNET_OUTPUT_DIRECTORY)
     set(CMAKE_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dotnet.output/${NAME})
