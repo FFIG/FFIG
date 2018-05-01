@@ -235,21 +235,45 @@ set_property(TEST test_cpp_tree
 if(dotnet_FOUND)
   include(dotnet)
   set(CMAKE_DOTNET_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  
   add_dotnet_project(NAME Shape.net 
     DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/Shape
     SOURCES 
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.cs
   )
+  
   add_dotnet_project(NAME Tree.net 
     DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/Tree
     SOURCES 
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.cs
   )
+  
   add_dotnet_project(NAME Number.net 
     DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/Number
     SOURCES 
     ${CMAKE_CURRENT_BINARY_DIR}/generated/Number.cs
   )
+ 
+  add_dotnet_project(NAME TestShape.net 
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape
+    SOURCES 
+    ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape/TestShape.cs
+  )
+  add_dependencies(TestShape.net Shape.net)
+
+  add_dotnet_project(NAME TestNumber.net 
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestNumber
+    SOURCES 
+    ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestNumber/TestNumber.cs
+  )
+  add_dependencies(TestNumber.net Number.net)
+  
+  add_dotnet_project(NAME TestTree.net 
+    DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestTree
+    SOURCES 
+    ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestTree/TestTree.cs
+  )
+  add_dependencies(TestTree.net Tree.net)
 
 #  add_test(
 #    NAME test_dotnet
