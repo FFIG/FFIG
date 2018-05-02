@@ -1,0 +1,24 @@
+#include <boost/python.hpp>
+
+BOOST_PYTHON_MODULE({{module.name}})
+{
+  using namespace boost::python;
+
+{% for class in classes %}
+  class_<{{class.name}}>("{{class.name}}")
+    {% for method in class.methods %}
+    {% if method.is_property %}
+    .add_property("{{method.name}}", &{{class.name}}::{{method.name}})
+    {% else %}
+    .def("{{method.name}}", &{{class.name}}::{{method.name}})
+    {% endif %}
+    {% endfor %}
+  ;
+
+{% for impl in class.impls %}
+  class_<{{impl.name}}, bases<{{class.name}}> >("{{impl.name}}")
+  ;
+
+{% endfor %}
+{% endfor %}
+}

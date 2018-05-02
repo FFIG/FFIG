@@ -52,7 +52,7 @@ endif()
 
 # FFIG won't work without Python and a C++ compiler so we can assume
 # support for Python and C++ must exist.
-set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS")
+set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS;BOOST_PYTHON")
 
 # Look for Go
 # FIXME: Make this less hacky, ideally using a real CMake module
