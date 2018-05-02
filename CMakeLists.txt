@@ -286,7 +286,7 @@ if(dotnet_FOUND)
   
     if(WIN32)
       file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated FFIG_DLL_PATH)
-      set_property(TEST TEST_NAME 
+      set_property(TEST ${TEST_NAME} 
         PROPERTY ENVIRONMENT "PATH=${DLL_PATH}\;%PATH%")
     else()
       set_property(TEST ${TEST_NAME} 
