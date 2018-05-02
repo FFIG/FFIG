@@ -275,23 +275,44 @@ if(dotnet_FOUND)
   )
   add_dependencies(TestTree.net Tree.net)
 
+  function(ffig_set_test_shared_library_path)
+    set(options)
+    set(multiValueArgs)
+    set(oneValueArgs TEST_NAME DLL_PATH)
+    cmake_parse_arguments(ffig_set_test_shared_library_path "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(TEST_NAME ${ffig_set_test_shared_library_path_TEST_NAME})
+    set(DLL_PATH ${ffig_set_test_shared_library_path_DLL_PATH})
+  
+    if(WIN32)
+      file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated FFIG_DLL_PATH)
+      set_property(TEST TEST_NAME 
+        PROPERTY ENVIRONMENT "PATH=${DLL_PATH}\;%PATH%")
+    else()
+      set_property(TEST ${TEST_NAME} 
+        PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${DLL_PATH}:$LD_LIBRARY_PATH")
+    endif()
+  endfunction()
+  
   add_test(
     NAME test_shape_dotnet
     COMMAND dotnet test --no-build --no-restore -o . 
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/TestShape.net)
   set_property(TEST test_shape_dotnet 
                PROPERTY LABELS DOTNET)
-  set_property(TEST test_shape_dotnet 
-               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
-  
+  ffig_set_test_shared_library_path(
+    TEST_NAME test_shape_dotnet 
+    DLL_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
   add_test(
     NAME test_number_dotnet
     COMMAND dotnet test --no-build --no-restore -o .
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/TestNumber.net)
   set_property(TEST test_number_dotnet 
                PROPERTY LABELS DOTNET)
-  set_property(TEST test_number_dotnet 
-               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+  ffig_set_test_shared_library_path(
+    TEST_NAME test_number_dotnet 
+    DLL_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated)
   
   add_test(
     NAME test_tree_dotnet
@@ -299,8 +320,10 @@ if(dotnet_FOUND)
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/TestTree.net)
   set_property(TEST test_tree_dotnet 
                PROPERTY LABELS DOTNET)
-  set_property(TEST test_tree_dotnet 
-               PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+  ffig_set_test_shared_library_path(
+    TEST_NAME test_tree_dotnet 
+    DLL_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
 endif()
 
 if(Swift_FOUND)                                                             
