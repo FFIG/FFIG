@@ -11,7 +11,6 @@ function(set_test_shared_library_path)
   set(DLL_PATH ${set_test_shared_library_path_DLL_PATH})
 
   if(WIN32)
-    file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated FFIG_DLL_PATH)
     set_property(TEST ${TEST_NAME} 
       PROPERTY ENVIRONMENT "PATH=${DLL_PATH}\;%PATH%")
   else()
