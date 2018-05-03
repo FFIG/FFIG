@@ -42,7 +42,7 @@ function(ffig_add_library)
   set(ffig_output_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
   if(ffig_add_library_BOOST_PYTHON)
-    set(ffig_invocation "${ffig_invocation};boost-python.tmpl")
+    set(ffig_invocation "${ffig_invocation};boost-python")
     # FIXME: Add output. 
   endif()
   if(ffig_add_library_RUBY)
