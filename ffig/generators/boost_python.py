@@ -7,7 +7,7 @@ import os
 def generator(module_name, binding, api_classes, env, output_dir):
     outputs = []
 
-    o = os.path.join(output_dir, module_name + '.py.cpp')
+    o = os.path.join(output_dir, module_name + '_py.cpp')
     ffig.generators.generate_single_output_file(
         module_name, 'boost-python.tmpl', api_classes, env, o)
     outputs.append(o)

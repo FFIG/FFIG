@@ -506,3 +506,19 @@ endif()
 if(Go_FOUND AND NOT WIN32)
   add_subdirectory(tests/go)
 endif()
+
+# FIXME: Get boost-python compiling/linking.
+find_package(PythonLibs REQUIRED)
+message("Include dirs of Python: " ${PYTHON_INCLUDE_DIRS} )
+message("Libs of Python: " ${PYTHON_LIBRARIES} )
+
+add_library(Shape_py3 SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
+target_include_directories(Shape_py3 PRIVATE ${PYTHON_INCLUDE_DIRS})
+target_link_libraries(Shape_py3 ${PYTHON_LIBRARIES})
+
+add_test(
+  NAME test_boost_python_bindings
+  COMMAND "import Shape_py3; c = Shape_py3.Circle(3); print('A %s with radius 3 has area %f' % (c.name, c.area))"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+set_property(TEST test_boost_python_bindings PROPERTY LABELS BOOST_PYTHON)
+

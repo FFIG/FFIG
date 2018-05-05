@@ -43,7 +43,7 @@ function(ffig_add_library)
 
   if(ffig_add_library_BOOST_PYTHON)
     set(ffig_invocation "${ffig_invocation};boost-python")
-    # FIXME: Add output. 
+    set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/${module}_py.cpp")
   endif()
   if(ffig_add_library_RUBY)
     set(ffig_invocation "${ffig_invocation};ruby")
