@@ -448,21 +448,21 @@ if(Java_FOUND)
   if(NOT JNA_JAR)
     message(FATAL_ERROR
       "Could NOT find JNA library. "
-      "Run git submodules update --init to get JARs")
+      "Run git submodule update --init to get JARs")
   endif()
 
   find_jar(JUNIT_JAR NAMES junit junit-4.12 PATHS ${FFIG_JAR_PATH})
   if(NOT JUNIT_JAR)
     message(FATAL_ERROR
       "Could NOT find JUnit library. "
-      "Run git submodules update --init to get JARs")
+      "Run git submodule update --init to get JARs")
   endif()
 
   find_jar(HAMCREST_JAR NAMES hamcrest hamcrest-all-1.3 PATHS ${FFIG_JAR_PATH})
   if(NOT HAMCREST_JAR)
     message(FATAL_ERROR
       "Could NOT find Hamcrest library. "
-      "Run git submodules update --init to get JARs")
+      "Run git submodule update --init to get JARs")
   endif()
 
   # FIXME: Move JAR creation to ffig.cmake - requires passing JAR_PATH.
