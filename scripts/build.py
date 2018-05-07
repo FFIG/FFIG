@@ -17,14 +17,10 @@ def check_for_executable(exe_name, args=['--version']):
 
 
 def process_optional_bindings(required, disabled):
-    disabled = set() if disabled is None else set(disabled)
-    required = set() if required is None else set(required)
-
-    common = required.intersection(disabled)
-    if len(common):
-        print('Language bindings cannot be required AND disabled:')
-        print('  {}'.format(' '.join(common)))
-        sys.exit(1)
+    if disabled is None:
+        disabled = []
+    if required is None:
+        required = []
 
     output = []
 
@@ -83,13 +79,14 @@ def main():
             dest='win32')
 
     for lang in optional_languages:
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             '--disable-{}'.format(lang),
             dest='disabled_bindings',
             action='append_const',
             const=lang,
             help='Disable generation of bindings for {}'.format(lang))
-        parser.add_argument(
+        group.add_argument(
             '--require-{}'.format(lang),
             dest='required_bindings',
             action='append_const',
