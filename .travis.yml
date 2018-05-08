@@ -15,6 +15,7 @@ matrix:
       before_install:
         - pip install autopep8
       script:
+        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --venv --require_boost_python"
         - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python2 --venv"
         - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python2 --venv"
         - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python3 --venv"
