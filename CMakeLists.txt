@@ -554,19 +554,20 @@ endif()
 
 if(BOOST_PYTHON_Found)
   message("Building tests for boost::python")
-  add_library(Shape_py3 SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
-  target_include_directories(Shape_py3 PRIVATE ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-  target_link_libraries(Shape_py3 ${PYTHON_LIBRARIES})
-  target_link_libraries(Shape_py3 ${Boost_LIBRARIES})
-  set_property(TARGET Shape_py3 PROPERTY PREFIX "")
-  add_custom_command(TARGET Shape_py3
+  add_library(Shape_py SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
+  target_include_directories(Shape_py PRIVATE ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+  target_link_libraries(Shape_py ${PYTHON_LIBRARIES})
+  target_link_libraries(Shape_py ${Boost_LIBRARIES})
+  set_property(TARGET Shape_py PROPERTY PREFIX "")
+
+  add_custom_command(TARGET Shape_py
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Shape_py3> ${ffig_output_dir}/)
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Shape_py> ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
   # FIXME: Use the existing Python tests with boost::python.
   add_test(
     NAME test_boost_python_bindings
-    COMMAND python -c "import Shape_py3; c = Shape_py3.Circle(3); print('A %s with radius 3 has area %f' % (c.name, c.area))"
+    COMMAND python -c "import Shape_py; c = Shape_py.Circle(3); print('A %s with radius 3 has area %f' % (c.name, c.area))"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
   set_property(TEST test_boost_python_bindings PROPERTY LABELS BOOST_PYTHON)
 endif()
