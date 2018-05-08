@@ -173,6 +173,36 @@ if(NOT FFIG_DISABLE_DOTNET)
   endif()
 endif()
 
+# Look for Boost Python - needs Python libs and Boost.
+# FIXME: Get boost-python compiling/linking.
+if(NOT FFIG_DISABLE_BOOST_PYTHON)
+  find_package(PythonLibs)
+  message("Include dirs of Python: " ${PYTHON_INCLUDE_DIRS} )
+  message("Libs of Python: " ${PYTHON_LIBRARIES} )
+  if(NOT PythonLibs_FOUND)
+    if(FFIG_REQUIRE_BOOST_PYTHON)
+      message(FATAL_ERROR "CMake failed: Python libraries not found but are required by this build.")
+    else()  
+      message(STATUS "boost::python tests disabled: Python libraries not found.")
+    endif()
+  else()
+    SET(Boost_USE_STATIC_LIBS ON)
+    SET(Boost_USE_MULTITHREADED ON)
+    find_package(Boost COMPONENTS python)
+    if(NOT Boost_FOUND)
+      if(FFIG_REQUIRE_BOOST_PYTHON)
+        message(FATAL_ERROR "CMake failed: Boost libraries not found but are required by this build.")
+      else()  
+        message(STATUS "boost::python tests disabled: Boost libraries not found.")
+      endif()
+    else()
+      message(STATUS "Found boost::python. Generating boost::python bindings.")
+      list(APPEND all_ffig_bindings "BOOST_PYTHON")
+      set(BOOST_PYTHON_Found 1)
+    endif()
+  endif()
+endif()
+
 
 # Set FFIG_SOURCE so that FFIG-targets are sensitive to changes in FFIG code and templates.
 # The variable FFIG_SOURCE is used by ffig.cmake and is only needed when developing FFIG.
@@ -524,18 +554,16 @@ if(Go_FOUND AND NOT WIN32)
   add_subdirectory(tests/go)
 endif()
 
-# FIXME: Get boost-python compiling/linking.
-find_package(PythonLibs REQUIRED)
-message("Include dirs of Python: " ${PYTHON_INCLUDE_DIRS} )
-message("Libs of Python: " ${PYTHON_LIBRARIES} )
+if(BOOST_PYTHON_Found)
+  message("Building tests for boost::python")
+  add_library(Shape_py3 SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
+  target_include_directories(Shape_py3 PRIVATE ${PYTHON_INCLUDE_DIRS})
+  target_link_libraries(Shape_py3 ${PYTHON_LIBRARIES})
 
-add_library(Shape_py3 SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
-target_include_directories(Shape_py3 PRIVATE ${PYTHON_INCLUDE_DIRS})
-target_link_libraries(Shape_py3 ${PYTHON_LIBRARIES})
-
-add_test(
-  NAME test_boost_python_bindings
-  COMMAND "import Shape_py3; c = Shape_py3.Circle(3); print('A %s with radius 3 has area %f' % (c.name, c.area))"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
-set_property(TEST test_boost_python_bindings PROPERTY LABELS BOOST_PYTHON)
+  add_test(
+    NAME test_boost_python_bindings
+    COMMAND "import Shape_py3; c = Shape_py3.Circle(3); print('A %s with radius 3 has area %f' % (c.name, c.area))"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set_property(TEST test_boost_python_bindings PROPERTY LABELS BOOST_PYTHON)
+endif()
 

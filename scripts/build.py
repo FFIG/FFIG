@@ -33,7 +33,7 @@ def process_optional_bindings(required, disabled):
 
 
 def main():
-    optional_languages = ('dotnet', 'go', 'lua', 'java', 'swift', 'ruby')
+    optional_languages = ('dotnet', 'go', 'lua', 'java', 'swift', 'ruby', 'boost_python')
 
     import argparse
     parser = argparse.ArgumentParser()
@@ -81,13 +81,13 @@ def main():
     for lang in optional_languages:
         group = parser.add_mutually_exclusive_group()
         group.add_argument(
-            '--disable-{}'.format(lang),
+            '--disable_{}'.format(lang),
             dest='disabled_bindings',
             action='append_const',
             const=lang,
             help='Disable generation of bindings for {}'.format(lang))
         group.add_argument(
-            '--require-{}'.format(lang),
+            '--require_{}'.format(lang),
             dest='required_bindings',
             action='append_const',
             const=lang,
