@@ -560,6 +560,7 @@ if(BOOST_PYTHON_Found)
   target_include_directories(Shape_py3 PRIVATE ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(Shape_py3 ${PYTHON_LIBRARIES})
 
+  # FIXME: Use the existing Python tests with boost::python.
   add_test(
     NAME test_boost_python_bindings
     COMMAND "import Shape_py3; c = Shape_py3.Circle(3); print('A %s with radius 3 has area %f' % (c.name, c.area))"
