@@ -45,21 +45,11 @@ else()
   if(result)
     message(FATAL_ERROR "CMake failed: ${PYTHON_EXECUTABLE} cannot execute a simple Python script.")
   endif()
-  # Disable boost::python bindings if the user has specified a python interpreter as we will
-  # not be able to produce a compatible binary.
-  if(FFIG_REQUIRE_BOOST_PYTHON)
-    message(FATAL_ERROR "CMake failed: A custom Python interpreter cannot be provided alongside boost::python bindings.")
-  elseif(NOT FFIG_DISABLE_BOOST_PYTHON)
-    # FIXME: Remove the need for this by detecting Python headers and libraries from the interpreter path.
-    set(FFIG_DISABLE_BOOST_PYTHON 1)
-    message(STATUS "boost::python disabled as a custom Python interpreter was specified.")
-  endif()
-
 endif()
 
 # FFIG won't work without Python and a C++ compiler so we can assume
 # support for Python and C++ must exist.
-set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS;BOOST_PYTHON")
+set(all_ffig_bindings "PYTHON;CPP;CPP_MOCKS")
 
 # Look for Go
 # FIXME: Make this less hacky, ideally using a real CMake module
@@ -180,7 +170,6 @@ if(NOT FFIG_DISABLE_DOTNET)
 endif()
 
 # Look for Boost Python - needs Python libs and Boost.
-# FIXME: Get boost-python compiling/linking.
 if(NOT FFIG_DISABLE_BOOST_PYTHON)
   find_package(PythonLibs)
   if(NOT PythonLibs_FOUND)
@@ -192,8 +181,6 @@ if(NOT FFIG_DISABLE_BOOST_PYTHON)
   else()
     if(${PYTHON_VERSION_MAJOR} STREQUAL "3")
       find_package(Boost COMPONENTS python36)
-    elseif(${PYTHON_VERSION_MAJOR} STREQUAL "2")
-      find_package(Boost COMPONENTS python27)
     else()
       find_package(Boost COMPONENTS python)
     endif()
@@ -563,7 +550,6 @@ if(Go_FOUND AND NOT WIN32)
 endif()
 
 if(BOOST_PYTHON_Found)
-  message("Building tests for boost::python")
   add_library(Shape_py SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
   target_include_directories(Shape_py PRIVATE ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
   target_link_libraries(Shape_py ${PYTHON_LIBRARIES})

@@ -117,9 +117,10 @@ def main():
     if args.verbose:
         cmake_invocation.append('-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON')
 
+    if not os.path.exists(os.path.join(src_dir, args.out_dir)):
+        os.makedirs(os.path.join(src_dir, args.out_dir))
+    
     if args.venv:
-        if not os.path.exists(os.path.join(src_dir, args.out_dir)):
-            os.makedirs(os.path.join(src_dir, args.out_dir))
         python_executable = args.python_path if args.python_path else 'python'
         subprocess.check_call(
             '{} -m virtualenv pyenv'.format(python_executable).split(),
@@ -149,7 +150,23 @@ def main():
     cmake_invocation.extend(
         process_optional_bindings(required_bindings, disabled_bindings))
 
-    subprocess.check_call(cmake_invocation, cwd=src_dir)
+    cmake_cache_valid = True
+
+    try:
+        with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "r") as cachefile:
+            if cachefile.readline() != " ".join(cmake_invocation):
+                os.remove(os.path.join(src_dir, args.out_dir, "CMakeCache.txt"))
+                print("CMake invocation has changed. Rebuilding CMakeCache.txt")
+                cmake_cache_valid = False
+    except FileNotFoundError:
+        cmake_cache_valid = False
+        pass
+
+    if not cmake_cache_valid:
+        subprocess.check_call(cmake_invocation, cwd=src_dir)
+        with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "+w") as cachefile:
+            cachefile.write(" ".join(cmake_invocation))
+
     subprocess.check_call(
         'cmake --build ./{}'.format(args.out_dir).split(), cwd=src_dir)
 
