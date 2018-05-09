@@ -12,7 +12,7 @@ def check_for_executable(exe_name, args=['--version']):
         cmd.extend(args)
         subprocess.check_output(cmd)
         return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except (subprocess.CalledProcessError, IOError):
         return False
 
 
@@ -158,7 +158,7 @@ def main():
                 os.remove(os.path.join(src_dir, args.out_dir, "CMakeCache.txt"))
                 print("CMake invocation has changed. Rebuilding CMakeCache.txt")
                 cmake_cache_valid = False
-    except FileNotFoundError:
+    except IOError:
         cmake_cache_valid = False
         pass
 
