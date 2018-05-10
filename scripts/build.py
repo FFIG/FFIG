@@ -12,11 +12,25 @@ def check_for_executable(exe_name, args=['--version']):
         cmd.extend(args)
         subprocess.check_output(cmd)
         return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except (subprocess.CalledProcessError, IOError):
         return False
 
 
+def process_optional_bindings(required, disabled):
+    output = []
+
+    for lang in required:
+        output.append('-DFFIG_REQUIRE_{}=1'.format(lang.upper()))
+    for lang in disabled:
+        output.append('-DFFIG_DISABLE_{}=1'.format(lang.upper()))
+
+    return output
+
+
 def main():
+    optional_languages = ('dotnet', 'go', 'lua', 'java',
+                          'swift', 'ruby', 'boost_python')
+
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -60,6 +74,26 @@ def main():
             action='store_true',
             dest='win32')
 
+    for lang in optional_languages:
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
+            '--disable_{}'.format(lang),
+            dest='disabled_bindings',
+            action='append_const',
+            const=lang,
+            help='Disable generation of bindings for {}'.format(lang))
+        group.add_argument(
+            '--require_{}'.format(lang),
+            dest='required_bindings',
+            action='append_const',
+            const=lang,
+            help='Require generation of bindings for {}'.format(lang))
+
+    parser.add_argument(
+        '--nodetect',
+        action='store_true',
+        help='Disable generation of all optional bindings not explicitly activated')
+
     args = parser.parse_args()
     args.platform = platform.system()
 
@@ -83,9 +117,10 @@ def main():
     if args.verbose:
         cmake_invocation.append('-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON')
 
+    if not os.path.exists(os.path.join(src_dir, args.out_dir)):
+        os.makedirs(os.path.join(src_dir, args.out_dir))
+    
     if args.venv:
-        if not os.path.exists(os.path.join(src_dir, args.out_dir)):
-            os.makedirs(os.path.join(src_dir, args.out_dir))
         python_executable = args.python_path if args.python_path else 'python'
         subprocess.check_call(
             '{} -m virtualenv pyenv'.format(python_executable).split(),
@@ -104,7 +139,37 @@ def main():
         cmake_invocation.append(
             '-DPYTHON_EXECUTABLE={}'.format(args.python_path))
 
-    subprocess.check_call(cmake_invocation, cwd=src_dir)
+    # Add required / disabled binding options
+    required_bindings = args.required_bindings or []
+    disabled_bindings = args.disabled_bindings or []
+
+    if args.nodetect:
+        disabled_bindings += [o for o in optional_languages
+                              if o not in required_bindings]
+
+    cmake_invocation.extend(
+        process_optional_bindings(required_bindings, disabled_bindings))
+
+    cmake_cache_valid = True
+
+    try:
+        with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "r") as cachefile:
+            if cachefile.readline() != " ".join(cmake_invocation):
+                print("CMake invocation has changed. Rebuilding CMakeCache.txt")
+                cmake_cache_valid = False
+    except IOError:
+        cmake_cache_valid = False
+        pass
+
+    if not cmake_cache_valid:
+        try:
+            os.remove(os.path.join(src_dir, args.out_dir, "CMakeCache.txt"))
+        except OSError:
+            pass
+        subprocess.check_call(cmake_invocation, cwd=src_dir)
+        with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "w") as cachefile:
+            cachefile.write(" ".join(cmake_invocation))
+
     subprocess.check_call(
         'cmake --build ./{}'.format(args.out_dir).split(), cwd=src_dir)
 
