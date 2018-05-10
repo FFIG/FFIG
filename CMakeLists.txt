@@ -27,16 +27,9 @@ include_directories(externals/variant/include)
 # FIXME: Use FFIG to get this path.
 include_directories(ffig/include)
 
-# Check that the found version of Python==3 on Windows.
-# Trust the user if they have supplied their own.
-# FIXME: Get to the bottom of the libclang/ctypes issues with Python2 on Windows.
+# Detect Python if it's not user-specified.
 if(NOT PYTHON_EXECUTABLE)
   find_package(PythonInterp REQUIRED)
-  if(WIN32)
-    if(NOT ${PYTHON_VERSION_MAJOR} EQ 3)
-      message(FATAL_ERROR "CMake failed: Python 3 is required for Windows.")
-    endif()
-  endif()
 else()
   execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import this"
                   RESULT_VARIABLE result
@@ -44,6 +37,20 @@ else()
                   ERROR_QUIET)
   if(result)
     message(FATAL_ERROR "CMake failed: ${PYTHON_EXECUTABLE} cannot execute a simple Python script.")
+  endif()
+endif()
+
+# Robustly detect Python version
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import sys; sys.exit(sys.version_info[0])"
+  RESULT_VARIABLE result
+  OUTPUT_QUIET
+  ERROR_QUIET)
+set(PYTHON_VERSION_MAJOR result)
+# Check that the found version of Python==3 on Windows.
+# FIXME: Get to the bottom of the libclang/ctypes issues with Python2 on Windows.
+if(WIN32)
+  if(NOT ${PYTHON_VERSION_MAJOR} EQ 3)
+    message(FATAL_ERROR "CMake failed: Python 3 is required for Windows.")
   endif()
 endif()
 
