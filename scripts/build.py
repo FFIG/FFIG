@@ -155,7 +155,6 @@ def main():
     try:
         with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "r") as cachefile:
             if cachefile.readline() != " ".join(cmake_invocation):
-                os.remove(os.path.join(src_dir, args.out_dir, "CMakeCache.txt"))
                 print("CMake invocation has changed. Rebuilding CMakeCache.txt")
                 cmake_cache_valid = False
     except IOError:
@@ -163,6 +162,10 @@ def main():
         pass
 
     if not cmake_cache_valid:
+        try:
+            os.remove(os.path.join(src_dir, args.out_dir, "CMakeCache.txt"))
+        except IOError:
+            pass
         subprocess.check_call(cmake_invocation, cwd=src_dir)
         with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "w") as cachefile:
             cachefile.write(" ".join(cmake_invocation))
