@@ -45,7 +45,7 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import sys; sys.exit(sys.versio
   RESULT_VARIABLE result
   OUTPUT_QUIET
   ERROR_QUIET)
-set(PYTHON_VERSION_MAJOR result)
+set(PYTHON_VERSION_MAJOR ${result})
 # Check that the found version of Python==3 on Windows.
 # FIXME: Get to the bottom of the libclang/ctypes issues with Python2 on Windows.
 if(WIN32)
