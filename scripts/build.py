@@ -164,7 +164,7 @@ def main():
     if not cmake_cache_valid:
         try:
             os.remove(os.path.join(src_dir, args.out_dir, "CMakeCache.txt"))
-        except IOError:
+        except OSError:
             pass
         subprocess.check_call(cmake_invocation, cwd=src_dir)
         with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "w") as cachefile:
