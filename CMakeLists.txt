@@ -49,7 +49,7 @@ set(PYTHON_VERSION_MAJOR ${result})
 # Check that the found version of Python==3 on Windows.
 # FIXME: Get to the bottom of the libclang/ctypes issues with Python2 on Windows.
 if(WIN32)
-  if(NOT ${PYTHON_VERSION_MAJOR} STREQUALS 3)
+  if(NOT ${PYTHON_VERSION_MAJOR} STREQUAL 3)
     message(FATAL_ERROR "CMake failed: Python 3 is required for Windows.")
   endif()
 endif()
