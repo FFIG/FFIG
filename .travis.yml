@@ -16,11 +16,11 @@ matrix:
         - pip install autopep8
       script:
         # FIXME: Get boost::python to work in the face of a user-provided python binary.
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --require_boost_python --nodetect --clean"
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python2 --venv --disable_boost_python --clean"
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python3 --venv --disable_boost_python --clean"
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python2 --venv --disable_boost_python --clean"
-        - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python3 --venv --disable_boost_python --clean"
+        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --require_boost_python --nodetect"
+        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python2 --venv --disable_boost_python"
+        - docker run ffig-ci /bin/bash -c "./scripts/build.py -t --python-path python3 --venv --disable_boost_python"
+        - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python2 --venv --disable_boost_python"
+        - docker run ffig-ci /bin/bash -c "./scripts/build.py -T \"CPP|MOCKS\" -c ASAN --python-path python3 --venv --disable_boost_python"
         - ./scripts/codechecks.py
 
     - os: osx
@@ -28,7 +28,7 @@ matrix:
       osx_image: xcode9.3
       install:
         - brew update
-        - brew install ninja && brew upgrade python && brew install python@2 boost boost-python boost-python3
+        - brew install ninja && brew upgrade python && brew install python@2
         - brew cask install caskroom/cask/dotnet
         - /usr/local/opt/python@2/bin/pip2 install --user --upgrade pip
         - /usr/local/opt/python@2/bin/pip2 install --user jinja2 nose pycodestyle
