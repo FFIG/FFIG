@@ -164,7 +164,7 @@ def main():
 
     if not cmake_cache_valid:
         subprocess.check_call(cmake_invocation, cwd=src_dir)
-        with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "+w") as cachefile:
+        with open(os.path.join(src_dir, args.out_dir, "build.py.cache.txt"), "w") as cachefile:
             cachefile.write(" ".join(cmake_invocation))
 
     subprocess.check_call(
