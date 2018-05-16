@@ -15,8 +15,30 @@ public class {{class.name}} {
     protected Pointer ptr = Pointer.NULL;
 
     protected void finalize() {
-        {{module.name}}CLibrary.INSTANCE.{{module.name}}_{{class.name}}_dispose(ptr);
+      {{module.name}}CLibrary.INSTANCE.{{module.name}}_{{class.name}}_dispose(ptr);
     }
+
+    protected {{class.name}}()
+    {
+    }
+    
+    protected {{class.name}}(Pointer ptr)
+    {
+      this.ptr = ptr;
+    }
+    {% if not class.is_abstract %}
+    {% for method in class.constructors %}
+   
+    public {{class.name}}({{java_macros.method_parameters(method)}}) {
+      PointerByReference rv = new PointerByReference();
+      int rc = {{module.name}}CLibrary.INSTANCE.{{module.name}}_{{class.name}}_create({{java_macros.method_arguments(method, trailing_comma=True)}}rv);
+      if(rc != 0) {
+        throw new {{module.name}}Exception();
+      }
+      this.ptr = rv.getValue();
+    }
+    {% endfor %}
+    {% endif %}
 {% for method in class.methods %}
 
     {% if method.returns_void %}
@@ -34,8 +56,8 @@ public class {{class.name}} {
         throw new {{module.name}}Exception();
       }
       {% if method.returns_nullable %}
-      if(rv == Pointer.NULL) {
-        return Pointer.NULL;
+      if(rv.getValue() == Pointer.NULL) {
+        return null;
       }
       {% endif %}
       return {{method.return_type|to_java_return_value("rv")}};

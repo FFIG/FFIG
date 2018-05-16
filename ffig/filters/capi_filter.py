@@ -490,6 +490,8 @@ def to_java_return_type(t):
     if t.kind == TypeKind.POINTER:
         if t.pointee.kind == TypeKind.CHAR_S:
             return "String"
+        if t.pointee.kind == TypeKind.RECORD:
+            return t.pointee.name.replace('const ', '')
     raise Exception(
         'Type {} has no defined java return type translation (adding one may be trivial)'.format(
             t.name))
@@ -517,6 +519,10 @@ def to_java_return_value(t, rv):
     if t.kind == TypeKind.POINTER:
         if t.pointee.kind == TypeKind.CHAR_S:
             return "{}.getValue().getString(0)".format(rv)
+        if t.pointee.kind == TypeKind.RECORD:
+            return 'new {}({}.getValue())'.format(
+                t.pointee.name.replace(
+                    'const ', ''), rv)
     raise Exception(
         'Type {} has no defined java return value translation (adding one may be trivial)'.format(
             t.name))

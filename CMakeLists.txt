@@ -232,6 +232,7 @@ ffig_add_library(NAME Tree
                  CPP
                  D
                  DOTNET
+                 JAVA
                  PYTHON
                  SWIFT)
 
@@ -533,6 +534,24 @@ if(Java_FOUND)
             ${JNA_JAR}
             ${JUNIT_JAR}
             ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.jar)
+  
+  FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/java/classes/Tree")
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.jar
+    COMMAND ${Java_JAVAC_EXECUTABLE} 
+            -d ${CMAKE_CURRENT_BINARY_DIR}/generated/java/classes/Tree -cp ${CMAKE_CURRENT_LIST_DIR}/externals/ffig-jars/jna.jar ${CMAKE_CURRENT_BINARY_DIR}/generated/java/src/Tree/*.java
+    COMMAND ${Java_JAR_EXECUTABLE} -cfM Tree.jar -C ${CMAKE_BINARY_DIR}/generated/java/classes/Tree .
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    DEPENDS Tree_c)
+  add_custom_target(Tree_jar ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.jar)
+  
+  add_jar(TestTree
+          tests/java/TestTree.java
+          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+          INCLUDE_JARS
+            ${JNA_JAR}
+            ${JUNIT_JAR}
+            ${CMAKE_CURRENT_BINARY_DIR}/generated/Tree.jar)
 
   list(APPEND JAVA_JARS
        ${JNA_JAR}
@@ -566,6 +585,16 @@ if(Java_FOUND)
     PROPERTY LABELS JAVA)
   set_property(TEST test_java_shape
                 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+  
+  add_test(
+    NAME test_java_tree
+    COMMAND echo ${Java_JAVA_EXECUTABLE} -classpath ${JAVA_CLASSPATH} org.junit.runner.JUnitCore TestTree
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set_property(TEST test_java_tree
+    PROPERTY LABELS JAVA)
+  set_property(TEST test_java_tree
+                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 endif()
 
 add_test(
