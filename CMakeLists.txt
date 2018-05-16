@@ -140,7 +140,7 @@ if(NOT FFIG_DISABLE_JAVA)
       message(STATUS "Found Java SDK. Generating Java bindings.")
     endif()
     include(UseJava)
-    # FIXME: append JAVA to all_ffig_bindings once we have a test.
+    list(APPEND all_ffig_bindings "JAVA")
   endif()
 endif()
 
@@ -508,12 +508,6 @@ if(Java_FOUND)
     DEPENDS Asset_c)
   add_custom_target(Asset_jar ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.jar)
   
-#  add_jar(Asset
-#          ${CMAKE_CURRENT_BINARY_DIR}/generated/ffig/Asset/Asset.java
-#          ${ASSET_JAVA_SOURCES}
-#          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-#          INCLUDE_JARS ${JNA_JAR})
-
   add_jar(TestAsset
           tests/java/TestAsset.java
           OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
@@ -521,6 +515,24 @@ if(Java_FOUND)
             ${JNA_JAR}
             ${JUNIT_JAR}
             ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.jar)
+  
+  FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/java/classes/Shape")
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.jar
+    COMMAND ${Java_JAVAC_EXECUTABLE} 
+            -d ${CMAKE_CURRENT_BINARY_DIR}/generated/java/classes/Shape -cp ${CMAKE_CURRENT_LIST_DIR}/externals/ffig-jars/jna.jar ${CMAKE_CURRENT_BINARY_DIR}/generated/java/src/Shape/*.java
+    COMMAND ${Java_JAR_EXECUTABLE} -cfM Shape.jar -C ${CMAKE_BINARY_DIR}/generated/java/classes/Shape .
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    DEPENDS Shape_c)
+  add_custom_target(Shape_jar ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.jar)
+  
+  add_jar(TestShape
+          tests/java/TestShape.java
+          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+          INCLUDE_JARS
+            ${JNA_JAR}
+            ${JUNIT_JAR}
+            ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape.jar)
 
   list(APPEND JAVA_JARS
        ${JNA_JAR}
@@ -544,6 +556,15 @@ if(Java_FOUND)
   set_property(TEST test_java_asset
     PROPERTY LABELS JAVA)
   set_property(TEST test_java_asset
+                PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+  
+  add_test(
+    NAME test_java_shape
+    COMMAND echo ${Java_JAVA_EXECUTABLE} -classpath ${JAVA_CLASSPATH} org.junit.runner.JUnitCore TestShape
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+  set_property(TEST test_java_shape
+    PROPERTY LABELS JAVA)
+  set_property(TEST test_java_shape
                 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
 endif()
 
