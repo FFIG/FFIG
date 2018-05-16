@@ -85,8 +85,10 @@ function(ffig_add_library)
     set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/${module}.swift;${ffig_output_dir}/${module}-Bridging-Header.h")
   endif()
   if(ffig_add_library_JAVA)
-    set(ffig_invocation "${ffig_invocation};java.tmpl")
-    set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/${module}.java")
+    set(ffig_invocation "${ffig_invocation};java")
+    set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/ffig/${module}/${module}.java")
+    set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/ffig/${module}/${module}CLibrary.java")
+    set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/ffig/${module}/${module}Exception.java")
   endif()
 
   add_custom_command(OUTPUT ${ffig_outputs}

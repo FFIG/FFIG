@@ -498,10 +498,21 @@ if(Java_FOUND)
   endif()
 
   # FIXME: Move JAR creation to ffig.cmake - requires passing JAR_PATH.
-  add_jar(Asset
-          ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.java
-          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
-          INCLUDE_JARS ${JNA_JAR})
+  FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated/java/classes/Asset")
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.jar
+    COMMAND ${Java_JAVAC_EXECUTABLE} 
+            -d ${CMAKE_CURRENT_BINARY_DIR}/generated/java/classes/Asset -cp ${CMAKE_CURRENT_LIST_DIR}/externals/ffig-jars/jna.jar ${CMAKE_CURRENT_BINARY_DIR}/generated/java/src/Asset/*.java
+    COMMAND ${Java_JAR_EXECUTABLE} -cfM Asset.jar -C ${CMAKE_BINARY_DIR}/generated/java/classes/Asset .
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated
+    DEPENDS Asset_c)
+  add_custom_target(Asset_jar ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/Asset.jar)
+  
+#  add_jar(Asset
+#          ${CMAKE_CURRENT_BINARY_DIR}/generated/ffig/Asset/Asset.java
+#          ${ASSET_JAVA_SOURCES}
+#          OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
+#          INCLUDE_JARS ${JNA_JAR})
 
   add_jar(TestAsset
           tests/java/TestAsset.java
