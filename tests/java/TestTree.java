@@ -31,8 +31,6 @@ public class TestTree {
         tree = null;
 
         left.set_data(42);
-
-        tree.set_data(42);
-        assertEquals(tree.data(), 42);
+        assertEquals(left.data(), 42);
     }
 }

@@ -11,12 +11,12 @@ import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 
-abstract class {{module.name}}CLibrary implements Library
+interface {{module.name}}CLibrary extends Library
 {
     // FIXME: Handle different OSs in code rather than in the template.
     // The JAR file should not be OS-specific.
     static {{module.name}}CLibrary INSTANCE = ({{module.name}}CLibrary)Native.loadLibrary(
-        "{{module.name|to_shared_lib}}", {{module.name}}CLibrary.class);
+        "{{module.name}}_c", {{module.name}}CLibrary.class);
 
     abstract void {{module.name}}_clear_error();
 
