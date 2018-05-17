@@ -6,7 +6,7 @@
 # that make use of the C-API. 
 #
 # FIXME: Make output directory user-configurable.
-# Currently the generated bindings and libraries go into ${CMAKE_CURRENT_BINARY_DIR}/generated.
+# Currently the generated bindings and libraries go into ${ffig_output_dir}.
 #
 # Usage:
 #
@@ -37,9 +37,9 @@ function(ffig_add_library)
   set(input ${ffig_add_library_INPUTS})
 
   # Always generate c-api bindings as all other bindings use them.
-  set(ffig_invocation "-i;${input};-m;${module};-o;${CMAKE_CURRENT_BINARY_DIR}/generated;-b;_c.h.tmpl;_c.cpp.tmpl")
-  set(ffig_outputs "${CMAKE_CURRENT_BINARY_DIR}/generated/${module}_c.h;${CMAKE_CURRENT_BINARY_DIR}/generated/${module}_c.cpp")  
   set(ffig_output_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  set(ffig_invocation "-i;${input};-m;${module};-o;${ffig_output_dir};-b;_c.h.tmpl;_c.cpp.tmpl")
+  set(ffig_outputs "${ffig_output_dir}/${module}_c.h;${ffig_output_dir}/${module}_c.cpp")  
 
   if(ffig_add_library_BOOST_PYTHON)
     set(ffig_invocation "${ffig_invocation};boost_python")
@@ -84,10 +84,6 @@ function(ffig_add_library)
     set(ffig_invocation "${ffig_invocation};swift")
     set(ffig_outputs "${ffig_outputs};${ffig_output_dir}/${module}.swift;${ffig_output_dir}/${module}-Bridging-Header.h")
   endif()
-  if(ffig_add_library_JAVA)
-    set(ffig_invocation "${ffig_invocation};java")
-    # FIXME: Declare Java bindings outputs correctly - hard as full set depends on input file content.
-  endif()
 
   add_custom_command(OUTPUT ${ffig_outputs}
     COMMAND ${PYTHON_EXECUTABLE} -m ffig ${ffig_invocation}
@@ -114,5 +110,30 @@ function(ffig_add_library)
           COMMAND ${PYTHON_EXECUTABLE} -m pycodestyle --ignore=E501 ${ffig_output_dir}/${module_lower}
           DEPENDS ${ffig_outputs})
   endif()
+
+  if(ffig_add_library_JAVA)  
+    FILE(MAKE_DIRECTORY "${ffig_output_dir}/java/classes/${module}")
+    
+    add_custom_command(
+      OUTPUT ${ffig_output_dir}/java/src/${module}/${module}CLibrary.java
+      COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} -o ${ffig_output_dir} -b java
+      DEPENDS ${input} ${FFIG_SOURCE}
+      WORKING_DIRECTORY ${FFIG_ROOT}
+      COMMENT "Generating ${module} java source for ${input}")
+    
+    add_custom_target(${module}.ffig.java.source DEPENDS ${ffig_output_dir}/java/src/${module}/${module}CLibrary.java)
+  
+    add_custom_command(
+      OUTPUT ${ffig_output_dir}/${module}.jar
+      COMMAND ${Java_JAVAC_EXECUTABLE} 
+      -d ${ffig_output_dir}/java/classes/${module} -cp ${FFIG_JAR_PATH}/jna.jar ${ffig_output_dir}/java/src/${module}/*.java
+      COMMAND ${Java_JAR_EXECUTABLE} -cfM ${module}.jar -C ${ffig_output_dir}/java/classes/${module} .
+      WORKING_DIRECTORY ${ffig_output_dir}
+      DEPENDS ${module}.ffig.java.source
+      COMMENT "Building ${module}.jar from FFIG source bindings.")
+    
+    add_custom_target(${module}.ffig.java DEPENDS ${ffig_output_dir}/${module}.jar)
+  endif()
+
 endfunction()
 
