@@ -11,6 +11,7 @@ else()
   add_compile_options("-std=c++14")
 endif()
 
+set(FFIG_JNA_JAR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/externals/ffig-jars/jna.jar)
 set(FFIG_JAR_PATH ${CMAKE_CURRENT_SOURCE_DIR}/externals/ffig-jars)
 set(FFIG_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -499,8 +500,6 @@ if(Java_FOUND)
       "Could NOT find Hamcrest library. "
       "Run git submodule update --init to get JARs")
   endif()
-
-  # FIXME: Move JAR creation to ffig.cmake - requires passing JAR_PATH.
   
   add_jar(TestAsset
           tests/java/TestAsset.java
@@ -551,8 +550,6 @@ if(Java_FOUND)
     #list(JOIN ${JAVA_JARS} : JAVA_CLASSPATH)
     set(JAVA_CLASSPATH "TestAsset.jar:Asset.jar:TestShape.jar:Shape.jar:TestNumber.jar:Number.jar:TestTree.jar:Tree.jar:${JNA_JAR}:${JUNIT_JAR}:${HAMCREST_JAR}")
   endif()
-
-  message(STATUS "${Java_JAVA_EXECUTABLE} -classpath ${JAVA_CLASSPATH} org.junit.runner.JUnitCore TestAsset")
 
   add_test(
     NAME test_java_asset
@@ -624,21 +621,6 @@ if(Go_FOUND AND NOT WIN32)
 endif()
 
 if(BOOST_PYTHON_Found)
-  add_library(Shape_py SHARED ${CMAKE_CURRENT_BINARY_DIR}/generated/Shape_py.cpp)
-  target_include_directories(Shape_py PRIVATE ${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-  target_link_libraries(Shape_py ${PYTHON_LIBRARIES})
-  target_link_libraries(Shape_py ${Boost_LIBRARIES})
-  set_property(TARGET Shape_py PROPERTY PREFIX "")
-  if(WIN32)
-    set_property(TARGET Shape_py PROPERTY SUFFIX ".dll")
-  else()
-    set_property(TARGET Shape_py PROPERTY SUFFIX ".so")
-  endif()
-
-  add_custom_command(TARGET Shape_py
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Shape_py> ${CMAKE_CURRENT_BINARY_DIR}/generated)
-
   # FIXME: Use the existing Python tests with boost::python.
   add_test(
     NAME test_boost_python_bindings
