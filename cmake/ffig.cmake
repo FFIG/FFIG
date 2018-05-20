@@ -76,6 +76,10 @@ function(ffig_add_library)
   # FIXME: This is a bit ugly. The header is copied next to the generated bindings.
   file(COPY ${input} DESTINATION ${ffig_output_dir}/)
   
+  add_library(${module}_c SHARED ${input} ${ffig_output_dir}/${module}_c.h ${ffig_output_dir}/${module}_c.cpp)
+  set_target_properties(${module}_c PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY ${ffig_output_dir})
+  
   # FIXME: This is a bit ugly. The shared library is copied next to the generated bindings.
   # Currently needed for Windows where library goes into a Debug/Release subdirectory.
   if(WIN32)
@@ -83,10 +87,6 @@ function(ffig_add_library)
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${module}_c> ${ffig_output_dir}/)
   endif()
-
-  add_library(${module}_c SHARED ${input} ${ffig_output_dir}/${module}_c.h ${ffig_output_dir}/${module}_c.cpp)
-  set_target_properties(${module}_c PROPERTIES 
-    LIBRARY_OUTPUT_DIRECTORY ${ffig_output_dir})
 
   #
   # Ruby bindings
