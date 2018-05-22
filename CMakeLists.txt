@@ -171,6 +171,28 @@ if(NOT FFIG_DISABLE_LUA)
   endif()
 endif()
 
+# Look for Julia
+# FIXME: Make this less hacky, ideally using a real CMake module
+if(NOT FFIG_DISABLE_JULIA)
+  execute_process(COMMAND julia -e "print(2+2)"
+                  RESULT_VARIABLE result
+                  OUTPUT_QUIET
+                  ERROR_QUIET)
+  if(result)
+    if(FFIG_REQUIRE_JULIA)
+      message(FATAL_ERROR "CMake failed: Julia not found but is required by this build.")
+    endif()
+    message(STATUS "Julia tests disabled: julia cannot execute a simple Julia script.")
+  else()
+    if(NOT FFIG_REQUIRE_LUA)
+      message(STATUS "Found Julia. Generating Julia bindings.")
+    endif()
+    set(Julia_FOUND 1)
+    set(Julia_EXECUTABLE "julia")
+    list(APPEND all_ffig_bindings "JULIA")
+  endif()
+endif()
+
 # Look for C#
 # FIXME: Make this less hacky, ideally using a real CMake module
 if(NOT FFIG_DISABLE_DOTNET)
