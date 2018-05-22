@@ -1,3 +1,7 @@
+module FFIG
+
+export Shape, Circle, Square, area, name, perimeter
+
 mutable struct Shape
     ptr::Ptr{Void}
     Shape(ptr) = new(ptr)
@@ -8,11 +12,11 @@ function area(s::Shape)
 end
 
 function perimeter(s::Shape)
-    return ccall(("Shape_AbstractShape_area_noexcept", :libShape_c), Float64, (Ptr{Void},), s.ptr)
+    return ccall(("Shape_AbstractShape_perimeter_noexcept", :libShape_c), Float64, (Ptr{Void},), s.ptr)
 end
 
 function name(s::Shape)
-    cstring = ccall(("Shape_AbstractShape_area_noexcept", :libShape_c), Cstring, (Ptr{Void},), s.ptr)
+    cstring = ccall(("Shape_AbstractShape_name_noexcept", :libShape_c), Cstring, (Ptr{Void},), s.ptr)
     return unsafe_string(cstring)
 end
 
@@ -22,5 +26,10 @@ function Circle(r::Float64)
     return Shape(p[1])
 end
 
-c = Circle(1.0)
-print(area(c), "\n")
+function Square(s::Float64)
+    p = Array{Ptr{Void}}(1)
+    ccall(("Shape_Square_create", :libShape_c), Int32, (Float64, Ptr{Ptr{Void}}), s, p)
+    return Shape(p[1])
+end
+
+end # Module FFIG

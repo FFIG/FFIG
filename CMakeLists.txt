@@ -651,3 +651,12 @@ if(BOOST_PYTHON_Found)
   set_property(TEST test_boost_python_bindings PROPERTY LABELS BOOST_PYTHON)
 endif()
 
+if(Julia_FOUND)
+  add_test(
+      NAME test_julia_bindings
+      COMMAND ${Julia_EXECUTABLE} tests/julia/TestShape.jl
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+    set_property(TEST test_julia_bindings PROPERTY LABELS JULIA)
+    set_property(TEST test_julia_bindings
+                 PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/generated")
+endif()
