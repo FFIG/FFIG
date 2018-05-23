@@ -1,6 +1,6 @@
 using Base.Test
 
-include("../../sandbox/Shape.jl")
+include("../../build/generated/Shape.jl")
 using FFIG
 
 @test area(Square(3.0)) == 9.0

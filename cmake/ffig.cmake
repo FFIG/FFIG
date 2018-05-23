@@ -213,12 +213,12 @@ function(ffig_add_library)
     add_custom_command(
       OUTPUT ${ffig_output_dir}/${module}.jl
       COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} 
-      -o ${ffig_output_dir} -b jl.tmpl
+      -o ${ffig_output_dir} -b julia
       DEPENDS ${input} ${FFIG_SOURCE}
       WORKING_DIRECTORY ${FFIG_ROOT}
       COMMENT "Generating Julia source for ${module}")
 
-    add_custom_target(${module}.ffig.julia.source 
+    add_custom_target(${module}.ffig.julia.source ALL
       DEPENDS ${ffig_output_dir}/${module}.jl)
   endif()
 
