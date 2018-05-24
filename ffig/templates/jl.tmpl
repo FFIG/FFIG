@@ -3,44 +3,61 @@
 # Manual edits will be lost.
 module FFIG
 
-struct {{module.name}}Exception <: Exception 
+{% for class in classes %} export {{class.name}}
+{% for method in class.methods %} export {{method.name}}
+{% endfor %}
+{% for impl in class.impls %} export {{impl.name}}
+{% endfor %}
+{% endfor %}
+
+struct {{module.name}}Exception <: Exception
   message::String
-  #{{module.name}}Exception = (s=unsafe_string(ccall(("{{module.name}}_error", :lib_{{module.name}}_c), Cstring, ())); new(s))
+  function {{module.name}}Exception()
+    m=ccall(("{{module.name}}_error", :lib_{{module.name}}_c),
+            Cstring, ())
+    new(unsafe_string(m))
+    ccall(("{{module.name}}_clear_error", :lib_{{module.name}}_c),
+            Void, ())
+  end
 end
 
 {% for class in classes %}
-struct {{class.name}}
-  ptr::Ptr{Void}
-  {{class.name}}(ptr) = new(ptr)
-  {% if not class.is_abstract %}
-  {% endif %}
-end
+abstract type {{class.name}} end
 {% for method in class.methods %}
 
 {% if method.is_noexcept %}
 function {{method.name}}(o::{{class.name}})
-  return ccall(("{{module.name}}_{{class.name}}_{{method.name}}_noexcept", :lib{{module.name}}_c), 
-                {{method.return_type|to_julia_return_type}}, (Ptr{Void},), 
-                s.ptr)
+  rv = ccall(("{{module.name}}_{{class.name}}_{{method.name}}_noexcept", :lib{{module.name}}_c),
+             {{method.return_type|to_julia_return_type}}, (Ptr{Void},),
+             o.ptr)
+  return {{method.return_type|to_julia_return_value("rv")}}
+
 end
 {% else %}
 function {{method.name}}(o::{{class.name}})
   rv = Array{% raw %}{{% endraw %}{{method.return_type}}{% raw %}}{% endraw %}(1)
-  rc = ccall(("{{module.name}}_{{class.name}}_{{method.name}}", :lib{{module.name}}_c), 
-              Int32, (Ptr{Void}, Ptr{% raw %}{{% endraw %}{{method.return_type|to_julia_return_type}}{% raw %}}{% endraw %}), 
-              s.ptr, rv)
+  rc = ccall(("{{module.name}}_{{class.name}}_{{method.name}}", :lib{{module.name}}_c),
+              Int32, (Ptr{Void}, Ptr{% raw %}{{% endraw %}{{method.return_type|to_julia_return_type}}{% raw %}}{% endraw %}),
+              o.ptr, rv)
   if rc != 0
-    throw {{module.name}}Exception()  
+    throw {{module.name}}Exception()
   endif
-  return rv[1]
+  return {{method.return_type|to_julia_return_value("rv[1]")}}
 end
 {% endif %}
 {% endfor %}
 {% for impl in class.impls %}
 
-struct {{impl.name}} <: {{class.name}} 
-{% for constructor in impl.constructors %}
-  {{impl.name}}() = new()
+struct {{impl.name}} <: {{class.name}}
+{% for method in impl.constructors %}
+  ptr::Ptr{Void}
+  function {{impl.name}}(r::Float64)
+    p = Array{Ptr{Void}}(1)
+    (r, p)
+    ccall(("{{module.name}}_{{impl.name}}_create", :lib{{module.name}}_c),
+           Int32, ({{julia_macros.method_parameter_types(method, trailing_comma=True)}} Ptr{Void}), r, p)
+    new(p[1])
+  end
 {% endfor %}
 end
 {% endfor %}
