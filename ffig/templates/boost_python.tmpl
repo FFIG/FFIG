@@ -81,6 +81,45 @@ BOOST_PYTHON_MODULE({{module.name}}_py)
     {% endif %}
     {% endfor %}
   ;
+{% else %}
+  struct {{class.name}}Wrap : {{class.name}}, wrapper<{{class.name}}>
+  {
+    {% for method in class.methods %}
+    {% if method.is_property %}
+    {{method.return_type}} {{method.name}}(){% if method.is_const %} const{% endif %}{% if method.is_noexcept %} noexcept{% endif %} {
+      if (override f = this->get_override("f"))
+        return f();
+      return this->get_override("{{method.name}}")();
+    }
+
+    {{method.return_type}} default_{{method.name}}(){% if method.is_const %} const{% endif %}{% if method.is_noexcept %} noexcept{% endif %} {
+      return {{class.name}}::{{method.name}}();
+    }
+
+    {% else %}
+    {{method.return_type}} {{method.name}}({{method_parameters(method)}}){% if method.is_const %} const{% endif %}{% if method.is_noexcept %} noexcept{% endif %} {
+      if (override f = this->get_override("{{method.name}}"))
+        return f({{method_values(method)}});
+      return this->get_override("{{method.name}}")({{method_values(method)}});
+    }
+
+    {{method.return_type}} default_{{method.name}}({{method_parameters(method)}}){% if method.is_const %} const{% endif %}{% if method.is_noexcept %} noexcept{% endif %} {
+      return {{class.name}}::{{method.name}}({{method_values(method)}});
+    }
+
+    {% endif %}
+    {% endfor %}
+  };
+  
+  class_<{{class.name}}>("{{class.name}}"{% for constructor in class.constructors %}, init<{{method_arguments(constructor)}}>(){% endfor %})
+    {% for method in class.methods %}
+    {% if method.is_property %}
+    .add_property("{{method.name}}", &{{class.name}}::{{method.name}}, &{{class.name}}Wrap::default_{{method.name}})
+    {% else %}
+    .def("{{method.name}}", &{{class.name}}::{{method.name}}, &{{class.name}}Wrap::default_{{method.name}})
+    {% endif %}
+    {% endfor %}
+  ;
   
 {% endif %}
 

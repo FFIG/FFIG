@@ -257,6 +257,7 @@ ffig_add_library(NAME Shape
 
 ffig_add_library(NAME Tree
                  INPUTS tests/input/Tree.h
+                 BOOST_PYTHON
                  CPP
                  D
                  DOTNET
