@@ -20,3 +20,27 @@ def test_shape_Circle_has_expected_perimeter():
     c = shape.Circle(r)
     p = 2.0 * math.pi * r
     nose.tools.assert_almost_equal(c.perimeter, p)
+
+
+def test_shape_Circle_is_equal_to_itself():
+    c = shape.Circle(2)
+    assert c.is_equal(c)
+
+
+def test_shape_Circle_is_equal_to_another_circle_with_the_same_radius():
+    c1 = shape.Circle(2)
+    c2 = shape.Circle(2)
+    assert c1.is_equal(c2)
+
+
+def test_shape_Circle_is_not_equal_to_circle_with_different_radius():
+    c1 = shape.Circle(2)
+    c2 = shape.Circle(3)
+    assert not c1.is_equal(c2)
+
+
+def test_shape_Circle_is_not_equal_to_square():
+    c = shape.Circle(2)
+    s = shape.Square(2)
+    assert not c.is_equal(s)
+
