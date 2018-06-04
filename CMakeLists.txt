@@ -273,7 +273,8 @@ ffig_add_library(NAME Asset
 
 ffig_add_library(NAME Animal
                  INPUTS tests/input/Animal.h
-                 PYTHON)
+                 PYTHON
+                 BOOST_PYTHON)
 
 ffig_add_library(NAME Number
                  INPUTS tests/input/Number.h
