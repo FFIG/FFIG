@@ -277,6 +277,7 @@ ffig_add_library(NAME Animal
 
 ffig_add_library(NAME Number
                  INPUTS tests/input/Number.h
+                 BOOST_PYTHON
                  DOTNET
                  JAVA
                  PYTHON)
