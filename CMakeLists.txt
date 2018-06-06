@@ -348,7 +348,7 @@ set_property(TEST test_cpp_tree
              PROPERTY LABELS CPP)
 
 if(dotnet_FOUND)
-
+  
   add_dotnet_project(NAME TestShape.net
     DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/tests/dotnet/TestShape
     SOURCES
