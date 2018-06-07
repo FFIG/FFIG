@@ -218,7 +218,9 @@ function(ffig_add_library)
       DEPENDS ${ffig_output_dir}/${module}.jl)
   endif()
   
-  if(ffig_add_library_DOTNET)
+  # FIXME: Do not check dotnet_FOUND. 
+  # Requesting dotnet bindings with no dotnet is user-error.
+  if(ffig_add_library_DOTNET AND dotnet_FOUND)
     add_custom_command(
       OUTPUT ${ffig_output_dir}/${module}.net/${module}.cs ${ffig_output_dir}/${module}.net/${module}.net.csproj
       COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} -o ${ffig_output_dir} -b dotnet
