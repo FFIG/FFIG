@@ -1,32 +1,29 @@
-# ffig_add_library
-# ----------------
+# ffig_add_X_library
+# ------------------
 #
-# This module defines a function that allows the user to add a build target
-# that constructs a shared library with a C-API and optional language bindings
-# that make use of the C-API.
-#
-# FIXME: Make output directory user-configurable.
-# Currently the generated bindings and libraries go into ${ffig_output_dir}.
+# This module defines functions that allow the user to add build targets that
+# create language bindings for a C++ library.
+# 
+# All the bindings depend on a MODULE_NAME_c target produced by `ffig_add_c_library`.
 #
 # Usage:
 #
-# ffig_add_library(NAME myModuleName INPUTS myHeader.h RUBY PYTHON)
+# ffig_add_c_library(NAME myModuleName INPUTS myHeader.h)
+# ffig_add_python_library(NAME myModuleName INPUTS myHeader.h)
 #
 # This will create a build target called myModuleName_c which creates a shared library:
 # * libmyModuleName.so on Linux
 # * libmyModuleName.dylib on macOS
 # * myModuleName.dll on Windows
 #
-# NAME is required,
-# FIXME: relax constraints on INPUTS
-# INPUTS currently supports only a single header file (which must have only standard library includes).
+# And a Python2/Python3 shared library `myModuleName` that can be imported from Python.
 #
-# Optional bindings can be created by passing in any of the optional arguments:
-# * RUBY - creates myModuleName.rb
-# * PYTHON - creates myModuleName/{_py3.py,_py2.py,__init__.py}
-# * LUA - creates myModuleName.lua (needs luajit)
-# * CPP - creates myModuleName_cpp.h
-# * CPP_MOCKS - creates myModuleName_mocks.h
+# Currently the generated bindings and libraries go into ${ffig_output_dir}.
+# FIXME: Make output directory user-configurable.
+#
+# NAME is required,
+# INPUTS currently supports only a single header file (which must have only standard library includes).
+# FIXME: relax constraints on INPUTS
 
 set(ffig_output_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
@@ -39,25 +36,19 @@ function(ffig_add_c_library)
   set(input ${ffig_add_c_library_INPUTS})
   string(TOLOWER "${module}" module_lower)
 
-  message(STATUS ${module})
-
   set(ffig_output_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
   set(ffig_invocation "-i;${input};-m;${module};-o;${ffig_output_dir};-b;_c.h.tmpl;_c.cpp.tmpl")
   set(ffig_outputs "${ffig_output_dir}/${module}_c.h;${ffig_output_dir}/${module}_c.cpp")
 
   add_custom_command(OUTPUT ${ffig_output_dir}/${module}_c.h ${ffig_output_dir}/${module}_c.cpp
     COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} -o ${ffig_output_dir} -b _c.h.tmpl _c.cpp.tmpl
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${input} ${ffig_output_dir}/
     DEPENDS ${input} ${FFIG_SOURCE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     COMMENT "Generating FFIG bindings for ${module}: ${ffig_outputs}")
 
   add_custom_target(${module}.ffig.c.source ALL
     DEPENDS ${ffig_output_dir}/${module}_c.h ${ffig_output_dir}/${module}_c.cpp)
-
-  add_custom_command(TARGET ${module}.ffig.c.source
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${input} ${ffig_output_dir}/
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
   add_library(${module}_c SHARED ${input} ${ffig_output_dir}/${module}_c.h ${ffig_output_dir}/${module}_c.cpp)
   set_target_properties(${module}_c PROPERTIES
@@ -69,7 +60,7 @@ function(ffig_add_c_library)
   if(WIN32)
     add_custom_command(TARGET ${module}_c
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${module}_c> ${ffig_output_dir}/)
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${module}_c> ${ffig_output_dir}/)
   endif()
 endfunction()
 
@@ -305,13 +296,13 @@ function(ffig_add_go_library)
   string(TOLOWER "${module}" module_lower)
 
   add_custom_command(
-    OUTPUT ${ffig_output_dir}/${module}.go
+    OUTPUT ${ffig_output_dir}/src/${module}/${module}.go
     COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} -o ${ffig_output_dir} -b go
     DEPENDS ${input} ${FFIG_SOURCE}
     WORKING_DIRECTORY ${FFIG_ROOT}
     COMMENT "Generating Go bindings for ${module}")
 
-  add_custom_target(${module}.ffig.go ALL DEPENDS ${ffig_outputs};${ffig_output_dir}/${module}.go)
+  add_custom_target(${module}.ffig.go ALL DEPENDS ${ffig_output_dir}/src/${module}/${module}.go)
 endfunction()
 
 function(ffig_add_julia_library)
@@ -356,73 +347,5 @@ function(ffig_add_dotnet_library)
   add_dotnet_project(NAME ${module}.net
     DIRECTORY ${ffig_output_dir}/${module}.net
     SOURCES ${ffig_output_dir}/${module}.net/${module}.cs)
-endfunction()
-
-function(ffig_add_library)
-  set(options BOOST_PYTHON RUBY PYTHON CPP CPP_MOCKS GO LUA DOTNET D SWIFT JAVA JULIA)
-  set(oneValueArgs NAME INPUTS)
-  cmake_parse_arguments(ffig_add_library "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-  set(module ${ffig_add_library_NAME})
-  set(input ${ffig_add_library_INPUTS})
-  string(TOLOWER "${module}" module_lower)
-
-  # Always generate c-api bindings as all other bindings use them.
-  ffig_add_c_library(NAME ${module} INPUTS ${input})
-
-  if(ffig_add_library_CPP_MOCKS)
-    ffig_add_cpp_mocks_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_CPP)
-    ffig_add_cpp_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_GO)
-    ffig_add_go_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_D)
-    ffig_add_d_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_SWIFT)
-    ffig_add_swift_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_RUBY)
-    ffig_add_ruby_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_LUA)
-    ffig_add_lua_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_PYTHON)
-    ffig_add_python_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  if(ffig_add_library_JULIA)
-    ffig_add_julia_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  # FIXME: Do not check Java_FOUND.
-  # Requesting Java bindings with no Java SDK is user-error.
-  if(ffig_add_library_JAVA AND Java_FOUND)
-    ffig_add_java_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  # FIXME: Do not check BOOST_PYTHON_FOUND.
-  # Requesting boost::python bindings with no boost::python libs is user-error.
-  if(ffig_add_library_BOOST_PYTHON AND BOOST_PYTHON_Found)
-    ffig_add_boost_python_library(NAME ${module} INPUTS ${input})
-  endif()
-  
-  # FIXME: Do not check dotnet_FOUND.
-  # Requesting dotnet bindings with no dotnet is user-error.
-  if(ffig_add_library_DOTNET AND dotnet_FOUND)
-    ffig_add_dotnet_library(NAME ${module} INPUTS ${input})
-  endif()
-
 endfunction()
 
