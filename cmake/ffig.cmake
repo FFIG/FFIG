@@ -234,6 +234,8 @@ function(ffig_add_library)
     add_dotnet_project(NAME ${module}.net
       DIRECTORY ${ffig_output_dir}/${module}.net
       SOURCES ${ffig_output_dir}/${module}.net/${module}.cs)
+
+    add_dependencies(${module}.net ${module}.ffig.net.source)
   endif()
 
 endfunction()
