@@ -231,12 +231,18 @@ function(ffig_add_library)
     add_custom_target(${module}.ffig.net.source ALL
       DEPENDS ${ffig_output_dir}/${module}.net/${module}.cs ${ffig_output_dir}/${module}.net/${module}.net.csproj)
   
-    add_dotnet_project(NAME ${module}.net
-      DIRECTORY ${ffig_output_dir}/${module}.net
-      SOURCES ${ffig_output_dir}/${module}.net/${module}.cs)
+#    add_dotnet_project(NAME ${module}.net
+#      DIRECTORY ${ffig_output_dir}/${module}.net
+#      SOURCES ${ffig_output_dir}/${module}.net/${module}.cs)
+
+    add_custom_command(
+      OUTPUT ${module}.net.dll
+      COMMAND dotnet build -o .
+      WORKING_DIRECTORY ${ffig_output_dir}/${module}.net)
+
+    add_custom_target(${module}.net DEPENDS ${module}.net.dll)
 
     add_dependencies(${module}.net ${module}.ffig.net.source)
   endif()
-
 endfunction()
 
