@@ -25,17 +25,26 @@ clang.cindex.Config.set_compatibility_check(False)
 
 
 def find_clang_library_path():
-    paths = [
+    paths = {
+            'darwin': [
         '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib',
         '/Library/Developer/CommandLineTools/usr/lib',
-    ]
-    for path in paths:
-        if os.path.isfile(os.path.join(path, 'libclang.dylib')):
+            ],
+            'win32': [
+                r'C:\Program Files\LLVM\bin',
+            ],
+            }
+    ext = {
+            'darwin': 'dylib',
+            'win32': 'dll',
+            }
+    for path in paths[sys.platform]:
+        if os.path.isfile(os.path.join(path, 'libclang.{}'.format(ext[sys.platform]))):
             return path
-    raise Exception('Unable to find libclang.dylib')
+    raise Exception('Unable to find libclang.{}'.format(ext[sys.platform]))
 
 
-if sys.platform == 'darwin':
+if sys.platform == 'darwin' or sys.platform == 'win32':
     # OS X doesn't use DYLD_LIBRARY_PATH if System Integrity Protection is
     # enabled. Set the library path for libclang manually.
     clang.cindex.Config.set_library_path(find_clang_library_path())
