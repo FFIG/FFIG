@@ -106,9 +106,9 @@ def main():
     cmake_invocation = ['cmake', '.', '-B{}'.format(args.out_dir)]
     if args.platform == 'Windows':
         if args.win32:
-            cmake_invocation.extend(['-G', 'Visual Studio 14 2015'])
+            cmake_invocation.extend(['-G', 'Visual Studio 15 2017'])
         else:
-            cmake_invocation.extend(['-G', 'Visual Studio 14 2015 Win64'])
+            cmake_invocation.extend(['-G', 'Visual Studio 15 2017 Win64'])
     else:
         # Use Ninja instead of Make, if available.
         if check_for_executable('ninja'):
