@@ -43,6 +43,7 @@ function(ffig_add_c_library)
   add_custom_command(OUTPUT ${ffig_output_dir}/${module}_c.h ${ffig_output_dir}/${module}_c.cpp
     COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} -o ${ffig_output_dir} -b _c.h.tmpl _c.cpp.tmpl
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${input} ${ffig_output_dir}/
+
     DEPENDS ${input} ${FFIG_SOURCE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     COMMENT "Generating FFIG bindings for ${module}: ${ffig_outputs}")
@@ -191,6 +192,31 @@ function(ffig_add_boost_python_library)
     set_property(TARGET ${module}_py PROPERTY SUFFIX ".dll")
   else()
     set_property(TARGET ${module}_py PROPERTY SUFFIX ".so")
+  endif()
+  
+  # FIXME: Do not check dotnet_FOUND. 
+  # Requesting dotnet bindings with no dotnet is user-error.
+  if(ffig_add_library_DOTNET AND dotnet_FOUND)
+    add_custom_command(
+      OUTPUT ${ffig_output_dir}/${module}.net/${module}.cs ${ffig_output_dir}/${module}.net/${module}.net.csproj
+      COMMAND ${PYTHON_EXECUTABLE} -m ffig -i ${input} -m ${module} -o ${ffig_output_dir} -b dotnet
+      DEPENDS ${input} ${FFIG_SOURCE}
+      WORKING_DIRECTORY ${FFIG_ROOT}
+      COMMENT "Generating C# source for ${module}")
+
+    add_custom_target(${module}.ffig.net.source ALL
+      DEPENDS ${ffig_output_dir}/${module}.net/${module}.cs ${ffig_output_dir}/${module}.net/${module}.net.csproj)
+  
+    # Invoke dotnet directly as add_dotnet_project contains a copy which does not get ordered correctly.
+    # FIXME: Work out why the copy performed by add_dotnet_project is incorrectly ordered on Windows.
+    add_custom_command(
+      OUTPUT ${module}.net.dll
+      COMMAND dotnet build -o .
+      WORKING_DIRECTORY ${ffig_output_dir}/${module}.net)
+
+    add_custom_target(${module}.net DEPENDS ${module}.net.dll)
+
+    add_dependencies(${module}.net ${module}.ffig.net.source)
   endif()
 
   set_target_properties(${module}_py PROPERTIES
