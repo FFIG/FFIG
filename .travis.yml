@@ -34,8 +34,8 @@ matrix:
         - pip3 install --user --upgrade pip && pip3 install --user jinja2 nose pycodestyle
         - gem install ffi
       script:
-        - ./scripts/build.py -t
-        - ./scripts/build.py -t --python-path python3
+        - ./scripts/build.py -t --disable_boost_python --disable_dotnet
+        - ./scripts/build.py -t --disable_boost_python --disable_dotnet --python-path python3
 
 notifications:
   slack:
