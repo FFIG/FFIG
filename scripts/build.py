@@ -173,7 +173,7 @@ def main():
             cachefile.write(" ".join(cmake_invocation))
 
     if args.run_bazel:
-        subprocess.check_call('bazel build //...'.split(), cwd=src_dir)
+        subprocess.check_call('bazel build :all'.split(), cwd=src_dir)
 
     subprocess.check_call(
         'cmake --build ./{}'.format(args.out_dir).split(), cwd=src_dir)
